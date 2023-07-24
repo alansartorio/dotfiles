@@ -6,7 +6,7 @@ eww-wayland-git socat
 qt5-styleplugins
 tela-icon-theme-bin
 orchis-theme
-hyprland-git swaybg slurp grim wl-clipboard xdg-desktop-portal-wayland-git
+hyprland-git swaybg slurp grim wl-clipboard xdg-desktop-portal-hyprland-git
 
 neovim
 python-pynvim
