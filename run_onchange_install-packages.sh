@@ -23,7 +23,7 @@ EOM
 
 set -x
 
-paru --sudoloop -S $deps
+paru --sudoloop --needed -S $deps
 
 
 #libnotify bspwm hsetroot 
