@@ -1,0 +1,9 @@
+
+#!/bin/sh
+eww="eww -c $HOME/.config/eww/bar"
+
+$eww close calendar || (\
+    $eww update day="`date "+%d"`"; \
+    $eww update month="$(( `date "+%m"` -1 ))"; \
+    $eww update year="`date "+%y"`"; \
+    $eww open calendar )

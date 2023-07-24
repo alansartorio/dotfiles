@@ -1,0 +1,8 @@
+if [[ -o login ]]; then
+    #[[ -t 0 && $(tty) == /dev/tty1 && ! $DISPLAY ]] && exec startx
+    #[[ -t 0 && $(tty) == /dev/tty1 && ! $DISPLAY ]] && exec env WLR_NO_HARDWARE_CURSORS=1 XDG_CURRENT_DESKTOP=sway dbus-run-session sway --unsupported-gpu
+    #[[ -t 0 && $(tty) == /dev/tty1 && ! $DISPLAY ]] && exec env WLR_NO_HARDWARE_CURSORS=1 dbus-launch --exit-with-session river
+    [[ -t 0 && $(tty) == /dev/tty1 && ! $DISPLAY ]] && exec env WLR_NO_HARDWARE_CURSORS=1 dbus-launch Hyprland | logger
+else
+    exit 1 # Somehow this is a non-login shell.
+fi
