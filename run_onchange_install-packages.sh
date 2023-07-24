@@ -12,7 +12,7 @@ neovim
 python-pynvim
 ripgrep
 
-nerd-fonts-roboto-mono
+ttf-roboto-mono-nerd
 ttf-material-design-icons-git 
 
 python-rofi-git peerflix
