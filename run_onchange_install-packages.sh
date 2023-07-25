@@ -19,6 +19,8 @@ python-rofi-git peerflix
 polkit-kde-agent
 
 python python-pip python-babel python-pygments colorpicker
+
+alacritty
 EOM
 
 set -x
