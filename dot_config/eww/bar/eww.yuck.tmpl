@@ -85,11 +85,13 @@
             :onscroll "pactl set-sink-volume @DEFAULT_SINK@ $(test {} = up && printf + || printf -)1%"
             :onclick "amixer {{- if not .is_vm}}-D pulse{{- end }} set Master toggle"
             :onrightclick "pavucontrol &")
+    {{- if .hass}}
     (metric :label {hass-lamp.state == "loading" || hass-lamp.type == "loading" ? "󰇘" : hass-lamp.state == "off" ? "󰹐" : hass-lamp.type == "brightness" ? "󰛨" : "󰔏"}
             :value {hass-lamp.value ?: 0}
             :onscroll "socat -u - UNIX-SENDTO:/tmp/hass-light.sock <<< $(test {} = up && printf increase || printf decrease)"
             :onclick "socat -u - UNIX-SENDTO:/tmp/hass-light.sock <<< toggle_state"
             :onrightclick "socat -u - UNIX-SENDTO:/tmp/hass-light.sock <<< toggle_mode")
+    {{- end}}
     (metric :label "󰍛"
             :value {EWW_RAM.used_mem_perc})
     (metric :label "󱐖"
@@ -99,8 +101,9 @@
   )
 )
 
+{{- if .hass}}
 (deflisten hass-lamp :initial '{"state":"loading"}' "socat -u UNIX-CLIENT:/tmp/hass-light-eww-output.sock -")
-
+{{- end}}
 
 (deflisten workspaces :initial "[]" "bash scripts/get-workspaces $MONITOR")
 (deflisten current_workspace :initial "[1]" "bash scripts/get-active-workspace $MONITOR_ID")

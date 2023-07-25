@@ -44,7 +44,9 @@ exec-once = /usr/lib/kdeconnectd
 exec-once = launch-desktop-portal
 exec-once = /usr/lib/polkit-kde-authentication-agent-1
 exec-once = dunst
+{{- if .hass}}
 exec = HASS_TOKEN="{{(fromToml (include (printf "%s%s" .chezmoi.homeDir "/.local/share/secrets/secrets.toml"))).hass_key}}" launch-hass-server
+{{- end}}
 
 windowrulev2 = float,class:^(firefox)$,title:^(Firefox — Sharing Indicator)$
 windowrulev2 = nofullscreenrequest,class:^(firefox)$,title:^(Firefox — Sharing Indicator)$
