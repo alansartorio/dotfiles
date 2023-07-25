@@ -11,7 +11,7 @@ OR EDIT THIS ONE ACCORDING TO THE WIKI INSTRUCTIONS.
 #
 
 # See https://wiki.hyprland.org/Configuring/Monitors/
-monitor=,preferred,auto,auto
+monitor=,preferred,auto,{{if .auto_scaling}}auto{{else}}1{{end}}
 
 {{- if .desktop_monitors }}
 workspace = 1, monitor:DP-1
@@ -40,7 +40,9 @@ exec-once = MONITOR=0 MONITOR_ID=0 eww open -c ~/.config/eww/bar main-bar
 {{- end }}
 exec-once = pipewire & pipewire-pulse & wireplumber
 exec-once = swaybg -c "##121319"
+{{- if .kde_connect}}
 exec-once = /usr/lib/kdeconnectd
+{{- end}}
 exec-once = launch-desktop-portal
 exec-once = /usr/lib/polkit-kde-authentication-agent-1
 exec-once = dunst
@@ -71,7 +73,7 @@ input {
     follow_mouse = 1
 
     touchpad {
-        natural_scroll = no
+        natural_scroll = yes
     }
 
     sensitivity = 0.0 # -1.0 - 1.0, 0 means no modification.
@@ -97,7 +99,7 @@ decoration {
     # See https://wiki.hyprland.org/Configuring/Variables/ for more
 
     rounding = 10
-    blur = yes
+    blur = {{if .battery}}no{{else}}yes{{end}}
     blur_size = 3
     blur_passes = 1
     blur_new_optimizations = on
@@ -136,7 +138,7 @@ master {
 
 gestures {
     # See https://wiki.hyprland.org/Configuring/Variables/ for more
-    workspace_swipe = off
+    workspace_swipe = on
 }
 
 # Example per-device config

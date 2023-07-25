@@ -83,7 +83,7 @@
     (metric :label {volume.mute ? "󰖁" : "󰕾"}
             :value {volume.volume}
             :onscroll "pactl set-sink-volume @DEFAULT_SINK@ $(test {} = up && printf + || printf -)1%"
-            :onclick "amixer {{- if not .is_vm}}-D pulse{{- end }} set Master toggle"
+            :onclick "amixer {{if not .is_vm}}-D pulse{{end}} set Master toggle"
             :onrightclick "pavucontrol &")
     {{- if .hass}}
     (metric :label {hass-lamp.state == "loading" || hass-lamp.type == "loading" ? "󰇘" : hass-lamp.state == "off" ? "󰹐" : hass-lamp.type == "brightness" ? "󰛨" : "󰔏"}
@@ -162,7 +162,7 @@
   "date '+%b %d, %Y'")
 
 (defwindow main-bar
-  :monitor {{- if .desktop_monitors}} 1{{- else}} 0{{- end}}
+  :monitor {{if .desktop_monitors}}1{{else}}0{{end}}
   :geometry (geometry :x "0%"
                       :y "0%"
                       :width "100%"

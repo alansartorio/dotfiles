@@ -31,6 +31,25 @@ alacritty
 syslog-ng-openrc python-requests
 EOM
 
+function checkInstalled() {
+	package="$1"
+	pacman -Qi "$package" >/dev/null 2>&1
+}
+
+function checkAllInstalled() {
+	for package in $deps; do
+		if ! checkInstalled "$package"; then
+			return 1
+		fi
+	done
+	return 0
+}
+
+if checkAllInstalled; then
+	echo "All needed packages are already installed"
+	exit 0
+fi
+
 set -x
 
 paru --sudoloop --needed -S $deps
