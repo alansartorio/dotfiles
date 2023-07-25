@@ -83,7 +83,7 @@
     (metric :label {volume.mute ? "󰖁" : "󰕾"}
             :value {volume.volume}
             :onscroll "pactl set-sink-volume @DEFAULT_SINK@ $(test {} = up && printf + || printf -)1%"
-            :onclick "amixer -D pulse set Master toggle"
+            :onclick "amixer {{- if not .is_vm}}-D pulse{{- end }} set Master toggle"
             :onrightclick "pavucontrol &")
     (metric :label {hass-lamp.state == "loading" || hass-lamp.type == "loading" ? "󰇘" : hass-lamp.state == "off" ? "󰹐" : hass-lamp.type == "brightness" ? "󰛨" : "󰔏"}
             :value {hass-lamp.value ?: 0}
@@ -145,7 +145,7 @@
 
 
 (deflisten music :initial ""
-  "playerctl --follow metadata --format '{{ artist }} - {{ title }}' || true")
+  "playerctl --follow metadata --format {{"'{{ artist }} - {{ title }}'"}} || true")
 
 (deflisten volume :initial "{\"volume\": 0, \"mute\": false}"
   "scripts/getvol")
@@ -157,7 +157,7 @@
   "date '+%b %d, %Y'")
 
 (defwindow main-bar
-  :monitor 1
+  :monitor {{- if .desktop_monitors}} 1{{- else}} 0{{- end}}
   :geometry (geometry :x "0%"
                       :y "0%"
                       :width "100%"
@@ -166,6 +166,7 @@
   :exclusive true
   (bar))
 
+{{- if .desktop_monitors}}
 (defwindow secondary-bar
   :monitor 0
   :geometry (geometry :x "0%"
@@ -175,3 +176,4 @@
                       :anchor "top center")
   :exclusive true
   (bar))
+{{- end}}

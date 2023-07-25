@@ -1,0 +1,13 @@
+#!/bin/sh
+
+
+printvol() {
+	amixer {{- if not .is_vm}}-D pulse{{end}} sget Master | grep 'Left:' | awk -F'[][]' '{ print "{\"volume\": "substr($2,0,length($2)-1)", \"mute\": "($4 == "off" ? "true" : "false")"}" }'
+}
+
+printvol
+
+pactl subscribe | grep --line-buffered "sink" | while read
+do
+	printvol
+done

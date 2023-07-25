@@ -6,7 +6,13 @@ eww-wayland-git socat
 qt5-styleplugins
 tela-icon-theme-bin
 orchis-theme
-hyprland-git swaybg slurp grim wl-clipboard xdg-desktop-portal-hyprland-git
+swaybg slurp grim wl-clipboard xdg-desktop-portal-hyprland-git
+
+{{- if .nvidia}}
+hyprland-nvidia-git
+{{- else}}
+hyprland-git
+{{- end}}
 
 neovim
 python-pynvim
@@ -21,6 +27,8 @@ polkit-kde-agent
 python python-pip python-babel python-pygments colorpicker
 
 alacritty
+
+syslog-ng-openrc python-requests
 EOM
 
 set -x

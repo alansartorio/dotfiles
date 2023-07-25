@@ -13,6 +13,7 @@ OR EDIT THIS ONE ACCORDING TO THE WIKI INSTRUCTIONS.
 # See https://wiki.hyprland.org/Configuring/Monitors/
 monitor=,preferred,auto,auto
 
+{{- if .desktop_monitors }}
 workspace = 1, monitor:DP-1
 workspace = 2, monitor:DP-1
 workspace = 3, monitor:DP-1
@@ -23,6 +24,7 @@ workspace = 7, monitor:HDMI-A-1
 workspace = 8, monitor:HDMI-A-1
 workspace = 9, monitor:HDMI-A-1
 workspace = 10, monitor:HDMI-A-1
+{{- end }}
 
 #bind = ,mouse:282,pass,^(discord)$
 
@@ -30,8 +32,12 @@ workspace = 10, monitor:HDMI-A-1
 # See https://wiki.hyprland.org/Configuring/Keywords/ for more
 
 # Execute your favorite apps at launch
+{{- if .desktop_monitors }}
 exec-once = MONITOR=0 MONITOR_ID=1 eww open -c ~/.config/eww/bar main-bar
 exec-once = MONITOR=1 MONITOR_ID=0 eww open -c ~/.config/eww/bar secondary-bar
+{{- else }}
+exec-once = MONITOR=0 MONITOR_ID=0 eww open -c ~/.config/eww/bar main-bar
+{{- end }}
 exec-once = pipewire & pipewire-pulse & wireplumber
 exec-once = swaybg -c "##121319"
 exec-once = /usr/lib/kdeconnectd
