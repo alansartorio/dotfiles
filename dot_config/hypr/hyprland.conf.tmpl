@@ -216,7 +216,7 @@ bind = $mainMod, 35, workspace, m+1
 bindm = $mainMod, mouse:272, movewindow
 bindm = $mainMod, mouse:273, resizewindow
 
-bind = $mainMod, space, exec, hyprctl switchxkblayout by-tech-usb-gaming-keyboard next
+bind = $mainMod, space, exec, hyprctl switchxkblayout {{if hasKey . "keyboard_model"}}keyboard_model{{else}}at-translated-set-2-keyboard{{end}} next
 
 bind = , XF86MonBrightnessDown, exec, brightnessctl s 10%-
 bind = , XF86MonBrightnessUp, exec, brightnessctl s +10%

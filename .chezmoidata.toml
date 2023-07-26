@@ -1,0 +1,7 @@
+is_vm = false
+desktop_monitors = false
+hass = false
+nvidia = false
+battery = false
+auto_scaling = true
+kde_connect = false
