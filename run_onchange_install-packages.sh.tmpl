@@ -39,6 +39,7 @@ function checkInstalled() {
 function checkAllInstalled() {
 	for package in $deps; do
 		if ! checkInstalled "$package"; then
+			echo "Missing: $package"
 			return 1
 		fi
 	done
