@@ -113,7 +113,6 @@ $alt-text: $nord0;
   border-radius: 10px;
 }
 
-
 // Calendar
 .cal-box {
   background-color: $dark-background;
@@ -122,40 +121,38 @@ $alt-text: $nord0;
   color: $secondary-text;
 
   .cal-inner-box {
-      padding: 1rem 1rem .2rem;
+    padding: 1rem 1rem 0.2rem;
 
-      .cal {
-          &.highlight {
-	      padding: 10rem;
-	  color: $secondary-text;
-	  font-weight: bold;
-          }
-
-	&.header {
-	  color: $primary-color;
-	  font-weight: bold;
-	}
-
-	&.view {
-		//background: black;
-	}
-
-	&.button {
-	  color: $primary-color;
-	}
-
-	&:selected {
-	  color: $alt-text;
-	  font-weight: bold;
-	  border-radius: 100;
-	  background: white;
-	}
-
-
-	&:indeterminate {
-	  color: $light-background;
-	}
-
+    .cal {
+      &.highlight {
+        padding: 10rem;
+        color: $secondary-text;
+        font-weight: bold;
       }
+
+      &.header {
+        color: $primary-color;
+        font-weight: bold;
+      }
+
+      //&.view {
+      //background: black;
+      //}
+
+      &.button {
+        color: $primary-color;
+      }
+
+      &:selected {
+        color: $alt-text;
+        font-weight: bold;
+        border-radius: 100;
+        background: white;
+      }
+
+      &:indeterminate {
+        color: $light-background;
+      }
+    }
   }
 }
