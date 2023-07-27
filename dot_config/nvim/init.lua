@@ -47,6 +47,10 @@ require("lazy").setup({
 		'nvim-telescope/telescope.nvim',
 		dependencies = { 'nvim-lua/plenary.nvim' }
 	},
+	{
+		'jose-elias-alvarez/null-ls.nvim',
+		dependencies = { 'nvim-lua/plenary.nvim' },
+	},
 	'mfussenegger/nvim-jdtls',
 	'gruvbox-community/gruvbox',
 	'tpope/vim-fugitive',
@@ -80,6 +84,13 @@ require("lazy").setup({
 	--'elkowar/yuck.vim',
 	'wannesm/wmgraphviz.vim',
 	{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+})
+
+local null_ls = require'null-ls'
+null_ls.setup({
+    sources = {
+        null_ls.builtins.formatting.prettier,
+    },
 })
 
 require 'nvim-treesitter.configs'.setup {
