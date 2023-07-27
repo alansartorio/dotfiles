@@ -167,6 +167,7 @@ lspconfig.rust_analyzer.setup {
 	},
 	capabilities = capabilities
 }
+lspconfig.cssls.setup {}
 --lspconfig.java_language_server.setup {}
 --lspconfig.jdtls.setup {}
 
