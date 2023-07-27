@@ -40,19 +40,20 @@
       :y "20px"
       :width "14%"
       :height "100px")
-  (box
-    :class "calendar"
-    :orientation "h"
-    :valign "fill"
-    :halign "fill"
+      
+	(box :class "cal-box" 
+		 :orientation "v"
+	(box :class "cal-inner-box"
     (calendar
+      :class "cal"
       :day day
       :month month
       :year year
-      :show-details "true"
-      :show-heading "true"
-      :show-day-names "true")
-    )
+      ;:show-details "true"
+      ;:show-heading "true"
+      ;:show-day-names "true"
+      )
+    ))
 )
 
 ;(defwidget keyboard [] 

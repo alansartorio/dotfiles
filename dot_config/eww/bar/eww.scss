@@ -113,14 +113,49 @@ $alt-text: $nord0;
   border-radius: 10px;
 }
 
-.calendar {
-  background: $dark-background;
-  color: $secondary-text;
-  font-weight: 500;
-  border-radius: 10px;
-  border: solid 3px black;
-}
 
-.calendar:selected {
-  background: white;
+// Calendar
+.cal-box {
+  background-color: $dark-background;
+  font-size: 1em;
+  font-weight: 500;
+  color: $secondary-text;
+
+  .cal-inner-box {
+      padding: 1rem 1rem .2rem;
+
+      .cal {
+          &.highlight {
+	      padding: 10rem;
+	  color: $secondary-text;
+	  font-weight: bold;
+          }
+
+	&.header {
+	  color: $primary-color;
+	  font-weight: bold;
+	}
+
+	&.view {
+		//background: black;
+	}
+
+	&.button {
+	  color: $primary-color;
+	}
+
+	&:selected {
+	  color: $alt-text;
+	  font-weight: bold;
+	  border-radius: 100;
+	  background: white;
+	}
+
+
+	&:indeterminate {
+	  color: $light-background;
+	}
+
+      }
+  }
 }
