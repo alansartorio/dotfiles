@@ -44,6 +44,11 @@ require("lazy").setup({
 		build = "make install_jsregexp"
 	},
 	{
+		'windwp/nvim-autopairs',
+		event = "InsertEnter",
+		opts = {} -- this is equalent to setup({}) function
+	},
+	{
 		'nvim-telescope/telescope.nvim',
 		dependencies = { 'nvim-lua/plenary.nvim' }
 	},
@@ -84,13 +89,19 @@ require("lazy").setup({
 	--'elkowar/yuck.vim',
 	'wannesm/wmgraphviz.vim',
 	{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+	{
+		'ThePrimeagen/harpoon',
+		dependencies = { 'nvim-lua/plenary.nvim' }
+	}
 })
 
-local null_ls = require'null-ls'
+vim.g.gitgutter_map_keys = 0
+
+local null_ls = require 'null-ls'
 null_ls.setup({
-    sources = {
-        null_ls.builtins.formatting.prettier,
-    },
+	sources = {
+		null_ls.builtins.formatting.prettier,
+	},
 })
 
 require 'nvim-treesitter.configs'.setup {
@@ -213,6 +224,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
 	end,
 })
 
+
+vim.keymap.set('n', '<space>a', require "harpoon.mark".add_file)
+vim.keymap.set('n', '<space>h', require "harpoon.ui".toggle_quick_menu)
 
 vim.cmd "colorscheme gruvbox"
 
