@@ -99,10 +99,11 @@ decoration {
     # See https://wiki.hyprland.org/Configuring/Variables/ for more
 
     rounding = 10
-    blur = {{if .battery}}no{{else}}yes{{end}}
-    blur_size = 3
-    blur_passes = 1
-    blur_new_optimizations = on
+    blur {
+        enabled = {{if .battery}}false{{else}}true{{end}}
+        size = 3
+        passes = 1
+    }
 
     drop_shadow = yes
     shadow_range = 4
