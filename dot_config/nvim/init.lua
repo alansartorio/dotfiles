@@ -38,6 +38,10 @@ require("lazy").setup({
 	'neovim/nvim-lspconfig',
 	'hrsh7th/nvim-cmp',
 	'hrsh7th/cmp-nvim-lsp',
+	'simrat39/rust-tools.nvim',
+	--'mikelue/vim-maven-plugin',
+	'vim-test/vim-test',
+	'tpope/vim-dispatch',
 	{
 		"L3MON4D3/LuaSnip",
 		version = "2.*",
@@ -188,13 +192,25 @@ lspconfig.clangd.setup {
 lspconfig.pyright.setup {
 	capabilities = capabilities
 }
-lspconfig.rust_analyzer.setup {
-	-- Server-specific settings. See `:help lspconfig-setup`
-	settings = {
-		['rust-analyzer'] = {},
-	},
-	capabilities = capabilities
-}
+--lspconfig.rust_analyzer.setup {
+	---- Server-specific settings. See `:help lspconfig-setup`
+	--settings = {
+		--['rust-analyzer'] = {},
+	--},
+	--capabilities = capabilities
+--}
+local rt = require("rust-tools")
+
+rt.setup({
+  server = {
+    on_attach = function(_, bufnr)
+      -- Hover actions
+      vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
+      -- Code action groups
+      vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+    end,
+  },
+})
 lspconfig.cssls.setup {}
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -458,6 +474,7 @@ require('lualine').setup {
 		lualine_a = { 'lsp_progress', 'bo:filetype' }
 	}
 }
+
 
 -- vim.opt.statusline^=%{coc#status()}
 

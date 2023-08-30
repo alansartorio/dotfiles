@@ -17,13 +17,16 @@
   "nvim-treesitter": { "branch": "master", "commit": "7b04e8b67eec7d92daadf9f0717dd272ddfc81a3" },
   "nvim-web-devicons": { "branch": "master", "commit": "efbfed0567ef4bfac3ce630524a0f6c8451c5534" },
   "plenary.nvim": { "branch": "master", "commit": "267282a9ce242bbb0c5dc31445b6d353bed978bb" },
+  "rust-tools.nvim": { "branch": "master", "commit": "0cc8adab23117783a0292a0c8a2fbed1005dc645" },
   "suda.vim": { "branch": "master", "commit": "8b0fc3711760195aba104e2d190cff9af8267052" },
   "swagger-preview.nvim": { "branch": "master", "commit": "4e1db32e7934c57d653846d5d297f7ea9ddb6ee8" },
   "telescope.nvim": { "branch": "master", "commit": "1228f3b15ca3d9b95dcb92efda6a3448871030bd" },
   "vim-database": { "branch": "master", "commit": "e7528db240e09e1bdced74ecf4cfac6e866d85b9" },
+  "vim-dispatch": { "branch": "master", "commit": "6cc2691576f97d43f8751664d1a1a908b99927e5" },
   "vim-fugitive": { "branch": "master", "commit": "b3b838d690f315a503ec4af8c634bdff3b200aaf" },
   "vim-gitgutter": { "branch": "main", "commit": "8a2f8199b689b93fe4391a8ba1d97dd84b86ebd6" },
   "vim-surround": { "branch": "master", "commit": "3d188ed2113431cf8dac77be61b842acb64433d9" },
+  "vim-test": { "branch": "master", "commit": "7585ad2aa2dc8d4ffef0739a02cad8a30d75bfbb" },
   "vim-vinegar": { "branch": "master", "commit": "bb1bcddf43cfebe05eb565a84ab069b357d0b3d6" },
   "wmgraphviz.vim": { "branch": "master", "commit": "f08ff5becd1e6e81d681ff2926f2cce29f63cb18" }
 }
