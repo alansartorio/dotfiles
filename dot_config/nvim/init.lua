@@ -185,6 +185,9 @@ lspconfig.tsserver.setup {
 lspconfig.clangd.setup {
 	capabilities = capabilities
 }
+lspconfig.pyright.setup {
+	capabilities = capabilities
+}
 lspconfig.rust_analyzer.setup {
 	-- Server-specific settings. See `:help lspconfig-setup`
 	settings = {
