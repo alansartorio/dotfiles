@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -e
+
+project="$1"
+if [ -d "$project" ]; then
+	projectPath="$project"
+else
+	projectPath="$HOME/Documents/UnityProjects"
+	if [ "$project" -eq 2 ]; then
+		projectPath="$projectPath/Security Camera"
+	else
+		projectPath="$projectPath/Frantic Fortress Frenzy"
+	fi
+fi
+
+Xwayland -retro -noreset -geometry 1920x1080 :12 &
+
+sleep 1
+DISPLAY=:12 fluxbox &
+sleep 1
+DISPLAY=:12 xcompmgr &
+
+DISPLAY=:12 "$HOME/Unity/Hub/Editor/2022.3.7f1/Editor/Unity" -projectPath "$projectPath"
