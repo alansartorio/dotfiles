@@ -1,19 +1,19 @@
-vim.api.nvim_set_option("ignorecase", true)
-vim.api.nvim_set_option("ignorecase", true)
-vim.api.nvim_set_option("smartcase", true)
-vim.api.nvim_set_option("number", true)
-vim.api.nvim_set_option("scrolloff", 8)
-vim.api.nvim_set_option("sidescrolloff", 8)
-vim.api.nvim_set_option("incsearch", true)
-vim.api.nvim_set_option("relativenumber", true)
-vim.api.nvim_set_option("nu", true)
-vim.api.nvim_set_option("hlsearch", false)
-vim.api.nvim_set_option("errorbells", false)
-vim.api.nvim_set_option("hidden", true)
-vim.api.nvim_set_option("tabstop", 4)
-vim.api.nvim_set_option("shiftwidth", 4)
-vim.api.nvim_set_option("mouse", "a")
-vim.api.nvim_set_option("wrap", false)
+vim.o.ignorecase = true
+vim.o.smartcase = true
+vim.wo.number = true
+vim.wo.scrolloff = 8
+vim.wo.sidescrolloff = 8
+vim.o.incsearch = true
+vim.wo.relativenumber = true
+vim.wo.nu = true
+vim.o.hlsearch = false
+vim.o.errorbells = false
+vim.o.hidden = true
+vim.o.tabstop = 4
+vim.o.shiftwidth = 4
+vim.o.mouse = "a"
+vim.wo.wrap = false
+vim.o.expandtab = true
 
 vim.g.mapleader = " "
 
