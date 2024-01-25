@@ -37,7 +37,7 @@ exec-once = MONITOR=1 MONITOR_ID=0 eww open -c ~/.config/eww/bar secondary-bar
 {{- else }}
 exec-once = MONITOR=0 MONITOR_ID=0 eww open -c ~/.config/eww/bar main-bar
 {{- end }}
-exec-once = pipewire & pipewire-pulse & wireplumber
+exec-once = artix-pipewire-launcher
 exec-once = swaybg -c "##121319"
 {{- if .kde_connect}}
 exec-once = /usr/lib/kdeconnectd
