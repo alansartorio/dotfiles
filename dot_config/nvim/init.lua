@@ -189,8 +189,11 @@ lspconfig.tsserver.setup {
 lspconfig.clangd.setup {
 	capabilities = capabilities
 }
-lspconfig.pyright.setup {
-	capabilities = capabilities
+lspconfig.omnisharp.setup {
+	capabilities = capabilities,
+    cmd = { "/usr/bin/omnisharp" },
+    enable_roslyn_analyzers = true,
+    enable_import_completion = true,
 }
 --lspconfig.rust_analyzer.setup {
 	---- Server-specific settings. See `:help lspconfig-setup`
