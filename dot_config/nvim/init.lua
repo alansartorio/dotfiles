@@ -62,7 +62,7 @@ require("lazy").setup({
 	},
 	{
 		'nvimtools/none-ls.nvim',
-		dependencies = { 'nvim-lua/plenary.nvim' },
+		dependencies = { 'nvim-lua/plenary.nvim', 'nvimtools/none-ls-extras.nvim' },
 	},
 	'mfussenegger/nvim-jdtls',
 	'gruvbox-community/gruvbox',
@@ -131,7 +131,9 @@ local null_ls = require 'null-ls'
 null_ls.setup({
 	sources = {
 		null_ls.builtins.formatting.prettier,
+		require('none-ls.formatting.ruff_format'),
 	},
+    debug = false,
 })
 
 require 'nvim-treesitter.configs'.setup {
