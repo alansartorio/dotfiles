@@ -223,6 +223,9 @@ lspconfig.omnisharp.setup {
 	enable_roslyn_analyzers = true,
 	enable_import_completion = true,
 }
+lspconfig.terraformls.setup {
+	capabilities = capabilities,
+}
 --lspconfig.rust_analyzer.setup {
 ---- Server-specific settings. See `:help lspconfig-setup`
 --settings = {
