@@ -20,7 +20,9 @@ fi
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-plugins=(git)
+plugins=(git fastfile)
+
+fastfile_var_prefix='@'
 
 source $ZSH/oh-my-zsh.sh
 source ~/.zshenv
