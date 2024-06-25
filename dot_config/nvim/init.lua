@@ -132,6 +132,10 @@ null_ls.setup({
 	sources = {
 		null_ls.builtins.formatting.prettier,
 		require('none-ls.formatting.ruff_format'),
+		null_ls.builtins.formatting.pg_format,
+		null_ls.builtins.diagnostics.sqlfluff.with({
+			extra_args = { "--dialect", "postgres" },          -- change to your dialect
+		}),
 	},
     debug = false,
 })
