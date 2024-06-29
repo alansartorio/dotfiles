@@ -34,7 +34,6 @@ require("lazy").setup({
 	--{ 'neoclide/coc.nvim',            branch = 'master',                  build = 'yarn install --frozen-lockfile' },
 	--{ 'junegunn/fzf',      build = ':call fzf#install()' },
 	--'junegunn/fzf.vim',
-	'arkav/lualine-lsp-progress',
 	'neovim/nvim-lspconfig',
 	'hrsh7th/nvim-cmp',
 	'hrsh7th/cmp-nvim-lsp',
@@ -105,11 +104,11 @@ require("lazy").setup({
 	{
 		"David-Kunz/gen.nvim",
 		opts = {
-			model = "mistral:7b",   -- The default model to use.
+			model = "mistral:7b", -- The default model to use.
 			display_mode = "float", -- The display mode. Can be "float" or "split".
-			show_prompt = false,	-- Shows the Prompt submitted to Ollama.
-			show_model = false,	 -- Displays which model you are using at the beginning of your chat session.
-			no_auto_close = false,  -- Never closes the window automatically.
+			show_prompt = false, -- Shows the Prompt submitted to Ollama.
+			show_model = false, -- Displays which model you are using at the beginning of your chat session.
+			no_auto_close = false, -- Never closes the window automatically.
 			init = function(options)
 				--pcall(io.popen, "ollama serve > /dev/null 2>&1 &")
 			end,
@@ -123,6 +122,12 @@ require("lazy").setup({
 			debug = false -- Prints errors and the command which is run.
 		}
 	},
+	{
+		'linrongbin16/lsp-progress.nvim',
+		config = function()
+			require('lsp-progress').setup()
+		end
+	},
 })
 
 vim.g.gitgutter_map_keys = 0
@@ -134,10 +139,10 @@ null_ls.setup({
 		require('none-ls.formatting.ruff_format'),
 		null_ls.builtins.formatting.pg_format,
 		null_ls.builtins.diagnostics.sqlfluff.with({
-			extra_args = { "--dialect", "postgres" },          -- change to your dialect
+			extra_args = { "--dialect", "postgres" }, -- change to your dialect
 		}),
 	},
-    debug = false,
+	debug = false,
 })
 
 require 'nvim-treesitter.configs'.setup {
@@ -509,7 +514,13 @@ require('lualine').setup {
 		path = 1
 	},
 	sections = {
-		lualine_a = { 'lsp_progress', 'bo:filetype' }
+		lualine_a = {
+			function()
+				-- invoke `progress` here.
+				return require('lsp-progress').progress()
+			end,
+			'bo:filetype',
+		}
 	}
 }
 
