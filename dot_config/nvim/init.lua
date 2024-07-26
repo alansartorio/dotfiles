@@ -16,6 +16,7 @@ vim.wo.wrap = false
 vim.o.expandtab = true
 
 vim.g.mapleader = " "
+vim.lsp.inlay_hint.enable()
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -128,7 +129,13 @@ require("lazy").setup({
 			require('lsp-progress').setup()
 		end
 	},
+	{
+		'Joakker/lua-json5',
+		build = './install.sh'
+	},
 })
+
+require('dap.ext.vscode').json_decode = require'json5'.parse
 
 vim.g.gitgutter_map_keys = 0
 
