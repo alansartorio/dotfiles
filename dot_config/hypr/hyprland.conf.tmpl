@@ -88,6 +88,11 @@ general {
 }
 
 cursor {
+    {{- if .nvidia}}
+    no_hardware_cursors = true
+    #no_break_fs_vrr = true
+    min_refresh_rate = 48
+    {{- end}}
     no_warps = true
 }
 
@@ -141,6 +146,20 @@ gestures {
 misc {
     disable_splash_rendering = true
     disable_hyprland_logo = true
+    
+    {{- if .nvidia}}
+    vrr = 2
+    no_direct_scanout = false
+    render_ahead_of_time = false
+    {{- end}}
+
+    middle_click_paste = false
+}
+
+opengl {
+    {{- if .nvidia}}
+    nvidia_anti_flicker = false
+    {{- end}}
 }
 
 # Example windowrule v1
