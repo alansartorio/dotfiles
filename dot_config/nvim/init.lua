@@ -161,9 +161,15 @@ require('dap.ext.vscode').json_decode = require 'json5'.parse
 vim.g.gitgutter_map_keys = 0
 
 local null_ls = require 'null-ls'
+
 null_ls.setup({
 	sources = {
-		null_ls.builtins.formatting.prettier,
+		null_ls.builtins.formatting.prettier.with({
+			filetypes = {
+				"javascript", "typescript", "css", "scss", "html", "json", "yaml", "markdown", "graphql", "md", "txt",
+				"java"
+			},
+		}),
 		require('none-ls.formatting.ruff_format'),
 		null_ls.builtins.formatting.pg_format,
 		--null_ls.builtins.diagnostics.sqlfluff.with({
