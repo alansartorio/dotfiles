@@ -15,6 +15,7 @@ vim.o.mouse = "a"
 vim.wo.wrap = false
 vim.o.expandtab = true
 
+vim.g.NERDCreateDefaultMappings = 0
 vim.g.mapleader = " "
 vim.lsp.inlay_hint.enable()
 
@@ -40,7 +41,7 @@ require("lazy").setup({
 	'hrsh7th/cmp-nvim-lsp',
 	{
 		'mrcjkb/rustaceanvim',
-		version = '^4', -- Recommended
+		version = '^5', -- Recommended
 		ft = { 'rust' },
 	},
 	--'mikelue/vim-maven-plugin',
@@ -69,7 +70,21 @@ require("lazy").setup({
 	'tpope/vim-fugitive',
 	'tpope/vim-surround',
 	'airblade/vim-gitgutter',
-	'preservim/nerdcommenter',
+	{
+		'preservim/nerdcommenter',
+		config = function()
+			function map(modes, target, combo)
+				for _, mode in pairs(modes) do
+					vim.keymap.set({ mode }, "<leader>" .. combo,
+						":call nerdcommenter#Comment('" .. mode .. "', '" .. target .. "')<CR>")
+				end
+			end
+
+			map({ "x", "n" }, "Comment", "cc")
+			map({ "x", "n" }, "Uncomment", "cu")
+			map({ "x", "n" }, "Toggle", "c<space>")
+		end,
+	},
 	-- Plug 'hsanson/vim-android'
 	{ 'iamcco/markdown-preview.nvim', build = ':call mkdp#util#install()' },
 	--'rust-lang/rust.vim',
@@ -133,9 +148,15 @@ require("lazy").setup({
 		'Joakker/lua-json5',
 		build = './install.sh'
 	},
+	{
+		"aznhe21/actions-preview.nvim",
+		config = function()
+			vim.keymap.set({ "v", "n" }, "<leader>ca", require("actions-preview").code_actions)
+		end,
+	},
 })
 
-require('dap.ext.vscode').json_decode = require'json5'.parse
+require('dap.ext.vscode').json_decode = require 'json5'.parse
 
 vim.g.gitgutter_map_keys = 0
 
@@ -145,9 +166,9 @@ null_ls.setup({
 		null_ls.builtins.formatting.prettier,
 		require('none-ls.formatting.ruff_format'),
 		null_ls.builtins.formatting.pg_format,
-		null_ls.builtins.diagnostics.sqlfluff.with({
-			extra_args = { "--dialect", "postgres" }, -- change to your dialect
-		}),
+		--null_ls.builtins.diagnostics.sqlfluff.with({
+		--extra_args = { "--dialect", "postgres" }, -- change to your dialect
+		--}),
 	},
 	debug = false,
 })
@@ -227,11 +248,15 @@ lspconfig.pyright.setup {
 lspconfig.lua_ls.setup {
 	capabilities = capabilities
 }
-lspconfig.tsserver.setup {
+lspconfig.ts_ls.setup {
+	on_init = function(client)
+		client.server_capabilities.documentFormattingProvider = false
+	end,
 	capabilities = capabilities
 }
 lspconfig.clangd.setup {
-	capabilities = capabilities
+	capabilities = capabilities,
+	filetypes = { "c", "cpp", "objc", "objcpp", "cuda" }, -- exclude "proto".
 }
 lspconfig.omnisharp.setup {
 	capabilities = capabilities,
@@ -294,7 +319,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 		end, opts)
 		vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
 		vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
-		vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, opts)
+		--vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, opts)
 		vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
 		vim.keymap.set('n', '<A-F>', function()
 			vim.lsp.buf.format { async = true }
@@ -402,11 +427,11 @@ local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', function()
 	local opts = {} -- define here if you want to define something
 	vim.fn.system('git rev-parse --is-inside-work-tree')
-	if vim.v.shell_error == 0 then
-		require "telescope.builtin".git_files(opts)
-	else
-		require "telescope.builtin".find_files(opts)
-	end
+	--if vim.v.shell_error == 0 then
+	--require "telescope.builtin".git_files(opts)
+	--else
+	require "telescope.builtin".find_files(opts)
+	--end
 end, {})
 vim.keymap.set('n', '<leader>rg', builtin.live_grep, {})
 
@@ -505,7 +530,7 @@ vim.keymap.set('n', '<C-t>', ':tab split<CR>', { noremap = true })
 
 vim.g.omni_sql_no_default_maps = 1
 
-vim.keymap.set('n', '<Leader>c',
+vim.keymap.set('n', '<Leader>cp',
 	[[:clear<bar>silent exec "!cp '%:p' '%:p:h/%:t:r-copy.%:e'"<bar>redraw<bar>echo "Copied " . expand('%:t') . ' to ' . expand('%:t:r') . '-copy.' . expand('%:e')<cr>]],
 	{ noremap = true, silent = true })
 
