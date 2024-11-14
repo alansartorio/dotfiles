@@ -50,8 +50,15 @@ windowrulev2 = float,class:^(firefox)$,title:^(Firefox — Sharing Indicator)$
 # source = ~/.config/hypr/myColors.conf
 
 # Some default env vars.
+{{- if .nvidia}}
+env = LIBVA_DRIVER_NAME,nvidia
+env = XDG_SESSION_TYPE,wayland
+env = GBM_BACKEND,nvidia-drm
+env = __GLX_VENDOR_LIBRARY_NAME,nvidia
+{{- end}}
 env = XCURSOR_SIZE,24
 env = QT_QPA_PLATFORM,wayland
+env = QT_QPA_PLATFORMTHEME,qt6ct
 
 # For all categories, see https://wiki.hyprland.org/Configuring/Variables/
 input {
@@ -106,10 +113,9 @@ decoration {
         passes = 1
     }
 
-    drop_shadow = yes
-    shadow_range = 4
-    shadow_render_power = 3
-    col.shadow = rgba(1a1a1aee)
+    shadow {
+        enabled = no
+    }
 }
 
 animations {
@@ -146,21 +152,15 @@ gestures {
 misc {
     disable_splash_rendering = true
     disable_hyprland_logo = true
-    
-    {{- if .nvidia}}
-    vrr = 2
-    no_direct_scanout = false
-    render_ahead_of_time = false
-    {{- end}}
 
     middle_click_paste = false
 }
 
-opengl {
-    {{- if .nvidia}}
-    nvidia_anti_flicker = false
-    {{- end}}
+{{- if .nvidia}}
+render {
+    explicit_sync = true
 }
+{{- end}}
 
 # Example windowrule v1
 # windowrule = float, ^(kitty)$
