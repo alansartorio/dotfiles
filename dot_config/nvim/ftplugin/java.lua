@@ -8,11 +8,27 @@ vim.loop.fs_mkdir(workspaces_dir, 7*8*8 + 5*8 + 5)
 
 local workspace_dir = workspaces_dir .. project_name
 
+local jdtls_jar = '/usr/share/java/jdtls/plugins/org.eclipse.equinox.launcher_1.6.900.v20240613-2009.jar'
+local jdtls_config = '/usr/share/java/jdtls/config_linux'
+
 local config = {
 	cmd = {
-		'/home/alan/Downloads/jdtls/bin/jdtls',
-		'--data', workspace_dir
-	},
+        'java',
+        '-Declipse.application=org.eclipse.jdt.ls.core.id1',
+        '-Dosgi.bundles.defaultStartLevel=4',
+        '-Declipse.product=org.eclipse.jdt.ls.core.product',
+        '-Dlog.protocol=true',
+        '-Dlog.level=ALL',
+        '-Xmx1g',
+        '--add-modules=ALL-SYSTEM',
+        '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+        '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+
+        '-jar', jdtls_jar,
+        '-configuration', jdtls_config,
+        '-data', workspace_dir
+    },
+    root_dir = vim.fs.dirname(vim.fs.find({'gradlew', '.git', 'mvnw'}, { upward = true })[1]),
 	cmd_env = {
 		JAVA_HOME = '/usr/lib/jvm/java-17-openjdk'
 	},
