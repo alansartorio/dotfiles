@@ -1,5 +1,7 @@
 #!/bin/sh
 
+{{- if .artix}}
+
 read -r -d '' deps << EOM
 dunst
 eww-wayland-git socat
@@ -74,3 +76,5 @@ paru --sudoloop --needed -S $deps
 #polybar terminus-font 
 # python-dbus python-gobject 
 #sxhkd qutebrowser
+
+{{- end}}

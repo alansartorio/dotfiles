@@ -30,13 +30,15 @@ exec-once = MONITOR=1 MONITOR_ID=0 eww open -c ~/.config/eww/bar secondary-bar
 {{- else }}
 exec-once = MONITOR=0 MONITOR_ID=0 eww open -c ~/.config/eww/bar main-bar
 {{- end }}
+{{- if .artix }}
 exec-once = artix-pipewire-launcher
+exec-once = launch-desktop-portal
+exec-once = /usr/lib/polkit-kde-authentication-agent-1
+{{- end }}
 exec-once = swaybg -c "##121319"
 {{- if .kde_connect}}
 exec-once = /usr/lib/kdeconnectd
 {{- end}}
-exec-once = launch-desktop-portal
-exec-once = /usr/lib/polkit-kde-authentication-agent-1
 exec-once = dunst
 {{- if .hass}}
 exec = HASS_TOKEN="{{(fromToml (include (printf "%s%s" .chezmoi.homeDir "/.local/share/secrets/secrets.toml"))).hass_key}}" launch-hass-server
