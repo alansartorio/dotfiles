@@ -290,7 +290,7 @@ lspconfig.omnisharp.setup {
 lspconfig.terraformls.setup {
 	capabilities = capabilities,
 }
-lspconfig.r_language_server.setup{
+lspconfig.r_language_server.setup {
 	capabilities = capabilities,
 }
 --lspconfig.rust_analyzer.setup {
@@ -313,6 +313,9 @@ lspconfig.r_language_server.setup{
 --},
 --})
 lspconfig.cssls.setup {}
+lspconfig.gopls.setup {
+	capabilities = capabilities,
+}
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
