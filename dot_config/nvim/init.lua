@@ -293,6 +293,9 @@ lspconfig.terraformls.setup {
 lspconfig.r_language_server.setup {
 	capabilities = capabilities,
 }
+lspconfig.arduino_language_server.setup{
+	capabilities = capabilities,
+}
 --lspconfig.rust_analyzer.setup {
 ---- Server-specific settings. See `:help lspconfig-setup`
 --settings = {
