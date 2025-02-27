@@ -163,6 +163,13 @@ require("lazy").setup({
 			vim.keymap.set({ "v", "n" }, "<leader>ca", require("actions-preview").code_actions)
 		end,
 	},
+	{
+		'jmbuhr/otter.nvim',
+		dependencies = {
+			'nvim-treesitter/nvim-treesitter',
+		},
+		opts = {},
+	},
 })
 
 require('dap.ext.vscode').json_decode = require 'json5'.parse
