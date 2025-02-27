@@ -1,12 +1,9 @@
 #!/bin/bash
-sleep 1
-killall xdg-desktop-portal-hyprland
-killall xdg-desktop-portal-wlr
-killall xdg-desktop-portal-gtk
-killall xdg-desktop-portal
-/usr/lib/xdg-desktop-portal-hyprland > /tmp/xdg-desktop-portal-hyprland.log &
+sleep 2
+pkill -f /usr/lib/xdg-desktop-portal
+/usr/lib/xdg-desktop-portal-hyprland >/tmp/xdg-desktop-portal-hyprland.log 2>&1 &
 #/usr/lib/xdg-desktop-portal-gtk &
 sleep 1
 #sleep 1
-/usr/lib/xdg-desktop-portal > /tmp/xdg-desktop-portal.log &
+/usr/lib/xdg-desktop-portal >/tmp/xdg-desktop-portal.log 2>&1 &
 
