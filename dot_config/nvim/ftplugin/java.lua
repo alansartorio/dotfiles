@@ -8,7 +8,7 @@ vim.loop.fs_mkdir(workspaces_dir, 7*8*8 + 5*8 + 5)
 
 local workspace_dir = workspaces_dir .. project_name
 
-local jdtls_jar = '/usr/share/java/jdtls/plugins/org.eclipse.equinox.launcher_1.6.900.v20240613-2009.jar'
+local jdtls_jar = 'jdtls'
 local jdtls_config = '/usr/share/java/jdtls/config_linux'
 
 local config = {

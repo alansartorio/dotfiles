@@ -170,9 +170,20 @@ require("lazy").setup({
 		},
 		opts = {},
 	},
+	{
+		"seblyng/roslyn.nvim",
+		ft = "cs",
+		opts = {
+			-- your configuration comes here; leave empty for default settings
+			exe = {
+				"Microsoft.CodeAnalysis.LanguageServer"
+			}
+		}
+	}
 })
 
-require('dap.ext.vscode').json_decode = require 'json5'.parse
+-- TODO: find fix for nixos missing json5 lua lib
+--require('dap.ext.vscode').json_decode = require 'json5'.parse
 
 vim.g.gitgutter_map_keys = 0
 
@@ -189,6 +200,7 @@ null_ls.setup({
 		}),
 		require('none-ls.formatting.ruff_format'),
 		null_ls.builtins.formatting.pg_format,
+		null_ls.builtins.formatting.nixfmt,
 		--null_ls.builtins.diagnostics.sqlfluff.with({
 		--extra_args = { "--dialect", "postgres" }, -- change to your dialect
 		--}),
@@ -281,19 +293,13 @@ lspconfig.clangd.setup {
 	capabilities = capabilities,
 	filetypes = { "c", "cpp", "objc", "objcpp", "cuda" }, -- exclude "proto".
 }
-lspconfig.omnisharp.setup {
-	capabilities = capabilities,
-	cmd = { "/usr/bin/omnisharp" },
-	enable_roslyn_analyzers = true,
-	enable_import_completion = true,
-}
 lspconfig.terraformls.setup {
 	capabilities = capabilities,
 }
 lspconfig.r_language_server.setup {
 	capabilities = capabilities,
 }
-lspconfig.arduino_language_server.setup{
+lspconfig.arduino_language_server.setup {
 	capabilities = capabilities,
 }
 --lspconfig.rust_analyzer.setup {
@@ -317,6 +323,9 @@ lspconfig.arduino_language_server.setup{
 --})
 lspconfig.cssls.setup {}
 lspconfig.gopls.setup {
+	capabilities = capabilities,
+}
+lspconfig.nixd.setup {
 	capabilities = capabilities,
 }
 
