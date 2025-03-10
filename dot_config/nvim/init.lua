@@ -121,14 +121,14 @@ require("lazy").setup({
 		"David-Kunz/gen.nvim",
 		opts = {
 			model = "qwen2.5-coder:3b", -- The default model to use.
-			quit_map = "q",             -- set keymap to close the response window
-			retry_map = "<c-r>",        -- set keymap to re-send the current prompt
-			accept_map = "<c-cr>",      -- set keymap to replace the previous selection with the last result
-			display_mode = "float",     -- The display mode. Can be "float" or "split".
+			quit_map = "q",    -- set keymap to close the response window
+			retry_map = "<c-r>", -- set keymap to re-send the current prompt
+			accept_map = "<c-cr>", -- set keymap to replace the previous selection with the last result
+			display_mode = "float", -- The display mode. Can be "float" or "split".
 			host = "localhost",
 			port = "11434",
-			show_prompt = false,   -- Shows the Prompt submitted to Ollama.
-			show_model = false,    -- Displays which model you are using at the beginning of your chat session.
+			show_prompt = false, -- Shows the Prompt submitted to Ollama.
+			show_model = false, -- Displays which model you are using at the beginning of your chat session.
 			no_auto_close = false, -- Never closes the window automatically.
 			init = function(options)
 				--pcall(io.popen, "ollama serve > /dev/null 2>&1 &")
@@ -137,13 +137,14 @@ require("lazy").setup({
 			command = function(options)
 				local body = { model = options.model, stream = true }
 				return "curl --silent --no-buffer -X POST http://" ..
-					options.host .. ":" .. options.port .. "/api/chat -d $body"
+				options.host .. ":" .. options.port .. "/api/chat -d $body"
 			end,
 			-- The command for the Ollama service. You can use placeholders $prompt, $model and $body (shellescaped).
 			-- This can also be a lua function returning a command string, with options as the input parameter.
 			-- The executed command must return a JSON object with { response, context }
 			-- (context property is optional).
 			--list_models = '<omitted lua function>', -- Retrieves a list of model names
+			result_filetype = "markdown",
 			debug = false -- Prints errors and the command which is run.
 		}
 	},

@@ -4,14 +4,19 @@
 #
 
 # See https://wiki.hyprland.org/Configuring/Monitors/
+{{- if .desktop_monitors }}
+monitor=HDMI-A-1, preferred, 0x0, {{if .auto_scaling}}auto{{else}}1{{end}}
+monitor=DP-2, preferred, 1920x0, {{if .auto_scaling}}auto{{else}}1{{end}}
+{{- else }}
 monitor=,preferred,auto,{{if .auto_scaling}}auto{{else}}1{{end}}
+{{- end }}
 
 {{- if .desktop_monitors }}
-workspace = 1, monitor:DP-1
-workspace = 2, monitor:DP-1
-workspace = 3, monitor:DP-1
-workspace = 4, monitor:DP-1
-workspace = 5, monitor:DP-1
+workspace = 1, monitor:DP-2
+workspace = 2, monitor:DP-2
+workspace = 3, monitor:DP-2
+workspace = 4, monitor:DP-2
+workspace = 5, monitor:DP-2
 workspace = 6, monitor:HDMI-A-1
 workspace = 7, monitor:HDMI-A-1
 workspace = 8, monitor:HDMI-A-1
@@ -25,8 +30,8 @@ workspace = 10, monitor:HDMI-A-1
 
 # Execute your favorite apps at launch
 {{- if .desktop_monitors }}
-exec-once = MONITOR=0 MONITOR_ID=1 eww open -c ~/.config/eww/bar main-bar
-exec-once = MONITOR=1 MONITOR_ID=0 eww open -c ~/.config/eww/bar secondary-bar
+exec-once = MONITOR=0 MONITOR_ID=0 eww open -c ~/.config/eww/bar main-bar
+exec-once = MONITOR=1 MONITOR_ID=1 eww open -c ~/.config/eww/bar secondary-bar
 {{- else }}
 exec-once = MONITOR=0 MONITOR_ID=0 eww open -c ~/.config/eww/bar main-bar
 {{- end }}
@@ -52,9 +57,9 @@ windowrulev2 = float,class:^(firefox)$,title:^(Firefox — Sharing Indicator)$
 # source = ~/.config/hypr/myColors.conf
 
 # Some default env vars.
+env = XDG_SESSION_TYPE,wayland
 {{- if .nvidia}}
 env = LIBVA_DRIVER_NAME,nvidia
-env = XDG_SESSION_TYPE,wayland
 env = GBM_BACKEND,nvidia-drm
 env = __GLX_VENDOR_LIBRARY_NAME,nvidia
 {{- end}}
@@ -251,3 +256,4 @@ bind=$mainMod CTRL SHIFT, G, submap, passthrough
 submap=passthrough
 bind=$mainMod CTRL SHIFT, G, submap, reset
 submap=reset
+debug:disable_logs = false

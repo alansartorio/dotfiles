@@ -163,7 +163,7 @@
   "date '+%b %d, %Y'")
 
 (defwindow main-bar
-  :monitor {{if .desktop_monitors}}1{{else}}0{{end}}
+  :monitor 0
   :geometry (geometry :x "0%"
                       :y "0%"
                       :width "100%"
@@ -174,7 +174,7 @@
 
 {{- if .desktop_monitors}}
 (defwindow secondary-bar
-  :monitor 0
+  :monitor 1
   :geometry (geometry :x "0%"
                       :y "0%"
                       :width "100%"

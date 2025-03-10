@@ -4,7 +4,8 @@ if [[ -o login ]]; then
         #exec startx
         #exec env WLR_NO_HARDWARE_CURSORS=1 XDG_CURRENT_DESKTOP=sway dbus-run-session sway --unsupported-gpu
         #exec env WLR_NO_HARDWARE_CURSORS=1 dbus-launch --exit-with-session river
-        exec env WLR_NO_HARDWARE_CURSORS=1 dbus-launch Hyprland | logger
+        #exec env WLR_NO_HARDWARE_CURSORS=1 dbus-launch Hyprland | logger
+        exec env dbus-launch Hyprland | logger
         #exec env XDG_SESSION_TYPE=wayland dbus-launch gnome-session;
         #exec env XDG_SESSION_TYPE=wayland dbus-launch plasmashell;
     }

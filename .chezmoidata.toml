@@ -5,3 +5,4 @@ nvidia = false
 battery = false
 auto_scaling = true
 kde_connect = false
+artix = false
