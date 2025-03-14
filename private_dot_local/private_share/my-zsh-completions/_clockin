@@ -1,0 +1,3 @@
+#compdef clockin
+subcmds=('in' 'clear' 'show' 'summary' 'edit' 'link')
+_describe 'command' subcmds
