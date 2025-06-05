@@ -105,7 +105,7 @@
 )
 
 {{- if .hass}}
-(deflisten hass-lamp :initial '{"state":"loading"}' "socat -u UNIX-CLIENT:/tmp/hass-light-eww-output.sock -")
+(deflisten hass-lamp :initial '{"state":"loading"}' "sleep 5; socat -u UNIX-CLIENT:/tmp/hass-light-eww-output.sock -")
 {{- end}}
 
 (deflisten workspaces :initial "[]" "bash scripts/get-workspaces $MONITOR")
