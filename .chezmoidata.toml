@@ -1,5 +1,6 @@
 is_vm = false
 desktop_monitors = false
+vertical_monitor = true
 hass = false
 nvidia = false
 battery = false

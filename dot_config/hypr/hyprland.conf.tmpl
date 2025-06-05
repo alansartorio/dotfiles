@@ -5,8 +5,13 @@
 
 # See https://wiki.hyprland.org/Configuring/Monitors/
 {{- if .desktop_monitors }}
+    {{- if .vertical_monitor }}
+monitor=HDMI-A-1, preferred, 0x0, {{if .auto_scaling}}auto{{else}}1{{end}}, transform, 3
+monitor=DP-2, preferred, 1080x256, {{if .auto_scaling}}auto{{else}}1{{end}}, transform, 0
+    {{- else }}
 monitor=HDMI-A-1, preferred, 0x0, {{if .auto_scaling}}auto{{else}}1{{end}}
 monitor=DP-2, preferred, 1920x0, {{if .auto_scaling}}auto{{else}}1{{end}}
+    {{- end }}
 {{- else }}
 monitor=,preferred,auto,{{if .auto_scaling}}auto{{else}}1{{end}}
 {{- end }}
@@ -42,7 +47,7 @@ exec-once = /usr/lib/polkit-kde-authentication-agent-1
 {{- end }}
 exec-once = swaybg -c "##121319"
 {{- if .kde_connect}}
-exec-once = /usr/lib/kdeconnectd
+exec-once = kdeconnectd
 {{- end}}
 exec-once = dunst
 {{- if .hass}}
