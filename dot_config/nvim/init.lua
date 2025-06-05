@@ -89,7 +89,7 @@ require("lazy").setup({
 	{ 'iamcco/markdown-preview.nvim', build = ':call mkdp#util#install()' },
 	--'rust-lang/rust.vim',
 	-- "Plug 'neovim/nvim-lspconfig'
-	'tpope/vim-vinegar',
+	--'tpope/vim-vinegar',
 	-- "Plug 'simrat39/rust-tools.nvim'
 	'mfussenegger/nvim-dap',
 	--{ 'evanleck/vim-svelte', event = 'BufEnter *.svelte' },
@@ -137,7 +137,7 @@ require("lazy").setup({
 			command = function(options)
 				local body = { model = options.model, stream = true }
 				return "curl --silent --no-buffer -X POST http://" ..
-				options.host .. ":" .. options.port .. "/api/chat -d $body"
+					options.host .. ":" .. options.port .. "/api/chat -d $body"
 			end,
 			-- The command for the Ollama service. You can use placeholders $prompt, $model and $body (shellescaped).
 			-- This can also be a lua function returning a command string, with options as the input parameter.
@@ -174,13 +174,26 @@ require("lazy").setup({
 	{
 		"seblyng/roslyn.nvim",
 		ft = "cs",
+		---@module 'roslyn.config'
+		---@type RoslynNvimConfig
 		opts = {
 			-- your configuration comes here; leave empty for default settings
-			exe = {
-				"Microsoft.CodeAnalysis.LanguageServer"
-			}
 		}
-	}
+	},
+	{
+		'stevearc/oil.nvim',
+		---@module 'oil'
+		---@type oil.SetupOpts
+		opts = {},
+		-- Optional dependencies
+		dependencies = { { "echasnovski/mini.icons", opts = {} } },
+		-- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
+		-- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
+		lazy = false,
+		config = function()
+			vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+		end,
+	},
 })
 
 -- TODO: find fix for nixos missing json5 lua lib
@@ -598,6 +611,18 @@ require('lualine').setup {
 	}
 }
 
+require("oil").setup()
+
+vim.lsp.config("roslyn", {
+	cmd = {
+		"dotnet",
+		"/home/alan/.local/share/nvim/roslyn/Microsoft.CodeAnalysis.LanguageServer.dll",
+		"--logLevel=Information",
+		"--extensionLogDirectory=" .. vim.fs.dirname(vim.lsp.get_log_path()),
+		"--stdio",
+	},
+	-- Add other options here
+})
 
 -- vim.opt.statusline^=%{coc#status()}
 
