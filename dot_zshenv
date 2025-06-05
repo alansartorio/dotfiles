@@ -32,3 +32,5 @@ export PLATFORMIO_CORE_DIR="$XDG_DATA_HOME"/platformio
 export npm_config_prefix="$HOME/.local"
 
 export R_LIBS_USER="$HOME/R/lib"
+
+fpath=(~/.local/state/nix/profiles/profile/share/zsh/site-functions $fpath)

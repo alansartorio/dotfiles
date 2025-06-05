@@ -26,6 +26,7 @@ fastfile_var_prefix='@'
 
 source $ZSH/oh-my-zsh.sh
 source ~/.zshenv
+alias clockin-sync="clockin exec '( git add . && git commit -m "sync" ) || git pull --rebase && git push'"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
