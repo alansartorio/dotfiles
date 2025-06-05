@@ -1,5 +1,5 @@
 #!/bin/bash
 
 killall hass-fast
-sleep 1
+sleep 5
 socat -u UNIX-RECV:/tmp/hass-light.sock - | hass-light-eww &

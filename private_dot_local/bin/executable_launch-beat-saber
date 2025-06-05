@@ -1,0 +1,17 @@
+#!/bin/bash
+
+sudo modprobe uinput
+
+sleep 1
+
+wivrn-server &
+
+export XR_RUNTIME_JSON=/usr/share/openxr/1/openxr_wivrn.json
+export PRESSURE_VESSEL_FILESYSTEMS_RW=$XDG_RUNTIME_DIR/wivrn/comp_ipc
+WlxOverlay-S-v25.4.2-x86_64.AppImage &
+wlx_pid=$!
+
+/opt/bs-manager/bs-manager
+
+wivrnctl stop-server
+kill $wlx_pid
