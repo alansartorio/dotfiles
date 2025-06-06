@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+eww close-all -c ~/.config/eww/bar
+
+# Hyprland assigns monitor_ids consistently,
+# while eww screen ids change over time if monitors are unplugged/plugged
+# we can use --screen argument with monitor model to prevent this
+get-monitor-model() {
+    hyprland_id=$1
+    hyprctl monitors -j | jq -r ".[] | select(.id == $hyprland_id) | .model"
+}
+
+get-monitors() {
+    hyprctl monitors -j | jq -r '.[] | .id'
+}
+
+open-bar() {
+    monitor_id=$1
+    monitor_model=$(get-monitor-model $monitor_id)
+    if [ $monitor_id = 0 ]; then
+        bar=main-bar
+    else
+        bar=secondary-bar
+    fi
+
+    eww open --screen "$monitor_model" -c ~/.config/eww/bar --id $monitor_id $bar --arg "monitor_id=$monitor_id" --arg "monitor_index=$monitor_id"
+}
+close-bar() {
+    monitor_id=$1
+    eww close -c ~/.config/eww/bar $monitor_id
+}
+
+handle() {
+  case $1 in
+    monitoraddedv2*)
+        IFS=',' read monitor_id monitor_name monitor_description <<< ${1#monitoraddedv2>>}
+        echo added $monitor_name - $monitor_id - $monitor_description;
+
+        open-bar $monitor_id
+        ;;
+    monitorremovedv2*)
+        IFS=',' read monitor_id monitor_name monitor_description <<< ${1#monitorremovedv2>>}
+        echo removed $monitor_name - $monitor_id - $monitor_description;
+        
+        close-bar $monitor_id
+        ;;
+  esac
+}
+
+get-monitors | while read monitor_id; do
+    open-bar $monitor_id
+done
+
+socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do handle "$line"; done

@@ -3,9 +3,11 @@
 (defvar year "0")
 
 
-(defwidget bar []
+(defwidget bar [monitor_id monitor_index]
   (centerbox :class "bar" :orientation "h"
-    (workspaces)
+    (workspaces
+        :monitor_id monitor_id
+        :monitor_index monitor_index)
     (center)
     (sidestuff)))
 
@@ -108,17 +110,18 @@
 (deflisten hass-lamp :initial '{"state":"loading"}' "sleep 5; socat -u UNIX-CLIENT:/tmp/hass-light-eww-output.sock -")
 {{- end}}
 
-(deflisten workspaces :initial "[]" "bash scripts/get-workspaces $MONITOR")
-(deflisten current_workspace :initial "[1]" "bash scripts/get-active-workspace $MONITOR_ID")
-(defwidget workspaces []
-    (eventbox :onscroll "bash scripts/change-active-workspace {} ${current_workspace}" :class "workspaces-widget"
+(deflisten workspaces :initial "[]" "bash scripts/get-workspaces")
+(deflisten current_workspace :initial "[1]" "bash scripts/get-active-workspace")
+
+(defwidget workspaces [monitor_id monitor_index]
+    (eventbox :onscroll "bash scripts/change-active-workspace ${monitor_id} {} ${current_workspace[monitor_id]}" :class "workspaces-widget"
       (box :halign "start" :space-evenly true
-        (label :text "${workspaces}${current_workspace}" :visible false)
-        (for workspace in workspaces
+        ; (label :text "${workspaces}${current_workspace}" :visible false)
+        (for workspace in {workspaces[monitor_index]}
           (eventbox :cursor "pointer" :onclick "hyprctl dispatch workspace ${workspace.id}"
             (box 
               :valign "center" 
-              :class "workspace-entry ${workspace.id == current_workspace ? "current" : ""} ${workspace.windows > 0 ? "occupied" : "empty"}"
+              :class "workspace-entry ${workspace.id == current_workspace[monitor_id] ? "current" : ""} ${workspace.windows > 0 ? "occupied" : "empty"}"
               (label :text "${workspace.id}")
               )
             )
@@ -162,24 +165,24 @@
 (defpoll date :interval "10s"
   "date '+%b %d, %Y'")
 
-(defwindow main-bar
-  :monitor 0
+(defwindow main-bar [monitor_id monitor_index]
   :geometry (geometry :x "0%"
                       :y "0%"
                       :width "100%"
                       :height "10px"
                       :anchor "top center")
   :exclusive true
-  (bar))
+  (bar
+    :monitor_id monitor_id
+    :monitor_index monitor_index))
 
-{{- if .desktop_monitors}}
-(defwindow secondary-bar
-  :monitor 1
+(defwindow secondary-bar [monitor_id monitor_index]
   :geometry (geometry :x "0%"
                       :y "0%"
                       :width "100%"
                       :height "30px"
                       :anchor "top center")
   :exclusive true
-  (bar))
-{{- end}}
+  (bar
+    :monitor_id monitor_id
+    :monitor_index monitor_index))

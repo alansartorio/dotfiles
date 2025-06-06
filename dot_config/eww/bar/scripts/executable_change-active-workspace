@@ -1,25 +1,26 @@
 #! /bin/bash
 function clamp {
-	min=$1
-	max=$2
-	val=$3
-	python -c "print(max($min, min($val, $max)))"
+    min=$1
+    max=$2
+    val=$3
+    python -c "print(max($min, min($val, $max)))"
 }
 
-direction=$1
-current=$2
+monitor=$1
+direction=$2
+current=$3
 
-min_workspace=$(($MONITOR * 5 + 1))
-max_workspace=$((($MONITOR + 1) * 5))
+min_workspace=$(($monitor * 5 + 1))
+max_workspace=$((($monitor + 1) * 5))
 
 if test "$direction" = "down"
 then
-	target=$(clamp $min_workspace $max_workspace $(($current+1)))
-	echo "jumping to $target"
-	hyprctl dispatch workspace $target
+    target=$(clamp $min_workspace $max_workspace $(($current+1)))
+    echo "jumping to $target"
+    hyprctl dispatch workspace $target
 elif test "$direction" = "up"
 then
-	target=$(clamp $min_workspace $max_workspace $(($current-1)))
-	echo "jumping to $target"
-	hyprctl dispatch workspace $target
+    target=$(clamp $min_workspace $max_workspace $(($current-1)))
+    echo "jumping to $target"
+    hyprctl dispatch workspace $target
 fi

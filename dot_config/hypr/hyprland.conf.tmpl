@@ -34,12 +34,7 @@ workspace = 10, monitor:HDMI-A-1
 # See https://wiki.hyprland.org/Configuring/Keywords/ for more
 
 # Execute your favorite apps at launch
-{{- if .desktop_monitors }}
-exec-once = MONITOR=0 MONITOR_ID=0 eww open -c ~/.config/eww/bar main-bar
-exec-once = MONITOR=1 MONITOR_ID=1 eww open -c ~/.config/eww/bar secondary-bar
-{{- else }}
-exec-once = MONITOR=0 MONITOR_ID=0 eww open -c ~/.config/eww/bar main-bar
-{{- end }}
+exec-once = eww-launcher
 {{- if .artix }}
 exec-once = artix-pipewire-launcher
 exec-once = launch-desktop-portal
