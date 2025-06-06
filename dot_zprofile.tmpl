@@ -1,3 +1,4 @@
+{{- if .artix}}
 if [[ -o login ]]; then
     [[ -t 0 && $(tty) == /dev/tty1 && ! $DISPLAY ]] && {
         #set -x;
@@ -12,3 +13,4 @@ if [[ -o login ]]; then
 else
     exit 1 # Somehow this is a non-login shell.
 fi
+{{- end}}
