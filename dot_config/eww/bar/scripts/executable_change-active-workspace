@@ -1,52 +1,99 @@
-#!/usr/bin/env python3
+#!/usr/bin/env rust-script
+//! Dependencies can be specified in the script file itself as follows:
+//!
+//! ```cargo
+//! [dependencies]
+//! serde_json = "1.0"
+//! serde = { version = "1.0.219", features = ["derive"] }
+//! anyhow = "*"
+//! ```
+#![feature(exit_status_error)]
 
-import sys
+use anyhow::{Result, anyhow};
+use serde::{Deserialize, Serialize};
+use std::process::Command;
 
-_, monitor, direction, current = sys.argv
+#[derive(Debug, Serialize, Deserialize)]
+struct Monitor {
+    name: String,
+    id: u32,
+}
 
-monitor = int(monitor)
-current = int(current)
+#[derive(Debug, Serialize, Deserialize)]
+struct Arrangement {
+    monitor: Monitor,
+    workspaces: Vec<u32>
+}
 
-import subprocess
-from dataclasses import dataclass
-import json
 
-@dataclass
-class Monitor:
-    name: str
-    id: int
+fn get_arrangements() -> Result<Vec<Arrangement>> {
+    let arrangements_output = Command::new("workspace-arranger").output()?;
+    arrangements_output.status.exit_ok()?;
+    let arrangements_str = String::from_utf8(arrangements_output.stdout)?;
+    let arrangements = serde_json::from_str(&arrangements_str)?;
+    Ok(arrangements)
+}
 
-@dataclass
-class Arrangement:
-    monitor: Monitor
-    workspaces: list[int]
+fn change_to_workspace(target_workspace: u32) -> Result<()> {
+    println!("jumping to {target_workspace}");
+    Command::new("hyprctl")
+        .arg("dispatch")
+        .arg("workspace")
+        .arg(format!("{target_workspace}"))
+        .status()?
+        .exit_ok()?;
+    Ok(())
+}
 
-arrangements_str = subprocess.run(
-    "workspace-arranger", capture_output=True
-).stdout.decode()
-arrangements = [
-    Arrangement(
-        Monitor(arrangement["monitor"]["name"], arrangement["monitor"]["id"]),
-        arrangement["workspaces"],
-    )
-    for arrangement in json.loads(arrangements_str)
-]
-arrangement = next(
-    arrangement for arrangement in arrangements if arrangement.monitor.id == monitor
-)
+#[derive(Debug)]
+enum Direction {
+    Up,
+    Down
+}
 
-index = arrangement.workspaces.index(current)
-match direction:
-    case "down":
-        index += 1
-    case "up":
-        index -= 1
-index %= len(arrangement.workspaces)
+#[derive(Debug)]
+struct Args {
+    monitor: u32,
+    direction: Direction,
+    current: u32,
+}
 
-try:
-    target_workspace = arrangement.workspaces[index]
-except IndexError:
-    exit(0)
+fn parse_args() -> Result<Args> {
+    let mut args = std::env::args();
+    args.next().unwrap();
+    let monitor = args.next().ok_or(anyhow!("missing \"monitor\" argument"))?;
+    let direction = args.next().ok_or(anyhow!("missing \"direction\" argument"))?;
+    let current = args.next().ok_or(anyhow!("missing \"current\" argument"))?;
 
-print(f'jumping to {target_workspace}')
-subprocess.run(("hyprctl", "dispatch", "workspace", str(target_workspace)))
+    let monitor = monitor.parse()?;
+    let direction = match direction.as_str() {
+        "up" => Direction::Up,
+        "down" => Direction::Down,
+        _ => Err(anyhow!("invalid direction \"{direction}\""))?,
+    };
+    let current = current.parse()?;
+
+    Ok(Args {
+        monitor,
+        direction,
+        current,
+    })
+}
+
+fn main() {
+    let arrangements = get_arrangements().unwrap();
+    let args = parse_args().unwrap();
+    let arrangement = arrangements
+        .into_iter()
+        .filter(|a| a.monitor.id == args.monitor)
+        .next()
+        .unwrap();
+    let mut index = arrangement.workspaces.iter().position(|&w| w == args.current).unwrap() as i32;
+    match args.direction {
+        Direction::Up => index -= 1,
+        Direction::Down => index += 1,
+    }
+    let index = index.rem_euclid(arrangement.workspaces.len() as i32) as usize;
+    let target_workspace: u32 = arrangement.workspaces[index];
+    change_to_workspace(target_workspace).unwrap();
+}
