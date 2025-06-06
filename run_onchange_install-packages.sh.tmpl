@@ -4,7 +4,7 @@
 
 read -r -d '' deps << EOM
 dunst
-eww-wayland-git socat
+eww socat rust-script pamixer
 qt5-styleplugins
 tela-icon-theme-bin
 orchis-theme
@@ -34,7 +34,6 @@ vscode-json-languageserver
 lua-language-server
 typescript-language-server
 prettier
-rust-script
 EOM
 
 function checkInstalled() {

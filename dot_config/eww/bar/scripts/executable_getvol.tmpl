@@ -2,7 +2,7 @@
 
 
 printvol() {
-	amixer {{if not .is_vm}}-D pulse{{end}} sget Master | grep 'Left:' | awk -F'[][]' '{ print "{\"volume\": "substr($2,0,length($2)-1)", \"mute\": "($4 == "off" ? "true" : "false")"}" }'
+	echo "{\"volume\": $(pamixer --get-volume), \"mute\": $(pamixer --get-mute)}"
 }
 
 printvol
