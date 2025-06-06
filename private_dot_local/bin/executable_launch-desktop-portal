@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 sleep 2
 pkill -f /usr/lib/xdg-desktop-portal
 /usr/lib/xdg-desktop-portal-hyprland >/tmp/xdg-desktop-portal-hyprland.log 2>&1 &
