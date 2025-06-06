@@ -2,6 +2,7 @@ is_vm = false
 desktop_monitors = false
 vertical_monitor = true
 hass = false
+hass_host = "192.168.0.151"
 nvidia = false
 battery = false
 auto_scaling = true
