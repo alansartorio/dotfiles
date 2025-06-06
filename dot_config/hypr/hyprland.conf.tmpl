@@ -16,25 +16,13 @@ monitor=DP-2, preferred, 1920x0, {{if .auto_scaling}}auto{{else}}1{{end}}
 monitor=,preferred,auto,{{if .auto_scaling}}auto{{else}}1{{end}}
 {{- end }}
 
-{{- if .desktop_monitors }}
-workspace = 1, monitor:DP-2
-workspace = 2, monitor:DP-2
-workspace = 3, monitor:DP-2
-workspace = 4, monitor:DP-2
-workspace = 5, monitor:DP-2
-workspace = 6, monitor:HDMI-A-1
-workspace = 7, monitor:HDMI-A-1
-workspace = 8, monitor:HDMI-A-1
-workspace = 9, monitor:HDMI-A-1
-workspace = 10, monitor:HDMI-A-1
-{{- end }}
-
 #bind = ,mouse:282,pass,^(discord)$
 
 # See https://wiki.hyprland.org/Configuring/Keywords/ for more
 
 # Execute your favorite apps at launch
 exec-once = eww-launcher
+exec-once = hyprland-workspace-binder
 {{- if .artix }}
 exec-once = artix-pipewire-launcher
 exec-once = launch-desktop-portal

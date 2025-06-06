@@ -1,5 +1,4 @@
-
-#!/bin/sh
+#!/usr/bin/env sh
 eww="eww -c $HOME/.config/eww/bar"
 
 $eww close calendar || (\

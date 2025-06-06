@@ -1,9 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 spaces (){
-    MONITORS=$(hyprctl monitors -j | jq 'map(.id)')
     WORKSPACE_WINDOWS=$(hyprctl workspaces -j | jq 'map({key: .id | tostring, value: .windows}) | from_entries')
-    echo $MONITORS | jq --argjson windows "${WORKSPACE_WINDOWS}" -Mc 'map([range(. * 5 + 1; (. + 1) * 5 + 1)] | map(tostring) | map({id: ., windows: ($windows[.]//0)}))'
+    workspace-arranger | jq --argjson windows "${WORKSPACE_WINDOWS}" -Mc 'map(.workspaces | map(tostring) | map({id: ., windows: ($windows[.]//0)}))'
 }
 
 spaces

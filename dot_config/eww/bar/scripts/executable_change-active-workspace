@@ -1,26 +1,52 @@
-#! /bin/bash
-function clamp {
-    min=$1
-    max=$2
-    val=$3
-    python -c "print(max($min, min($val, $max)))"
-}
+#!/usr/bin/env python3
 
-monitor=$1
-direction=$2
-current=$3
+import sys
 
-min_workspace=$(($monitor * 5 + 1))
-max_workspace=$((($monitor + 1) * 5))
+_, monitor, direction, current = sys.argv
 
-if test "$direction" = "down"
-then
-    target=$(clamp $min_workspace $max_workspace $(($current+1)))
-    echo "jumping to $target"
-    hyprctl dispatch workspace $target
-elif test "$direction" = "up"
-then
-    target=$(clamp $min_workspace $max_workspace $(($current-1)))
-    echo "jumping to $target"
-    hyprctl dispatch workspace $target
-fi
+monitor = int(monitor)
+current = int(current)
+
+import subprocess
+from dataclasses import dataclass
+import json
+
+@dataclass
+class Monitor:
+    name: str
+    id: int
+
+@dataclass
+class Arrangement:
+    monitor: Monitor
+    workspaces: list[int]
+
+arrangements_str = subprocess.run(
+    "workspace-arranger", capture_output=True
+).stdout.decode()
+arrangements = [
+    Arrangement(
+        Monitor(arrangement["monitor"]["name"], arrangement["monitor"]["id"]),
+        arrangement["workspaces"],
+    )
+    for arrangement in json.loads(arrangements_str)
+]
+arrangement = next(
+    arrangement for arrangement in arrangements if arrangement.monitor.id == monitor
+)
+
+index = arrangement.workspaces.index(current)
+match direction:
+    case "down":
+        index += 1
+    case "up":
+        index -= 1
+index %= len(arrangement.workspaces)
+
+try:
+    target_workspace = arrangement.workspaces[index]
+except IndexError:
+    exit(0)
+
+print(f'jumping to {target_workspace}')
+subprocess.run(("hyprctl", "dispatch", "workspace", str(target_workspace)))

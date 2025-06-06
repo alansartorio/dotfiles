@@ -110,11 +110,11 @@
 (deflisten hass-lamp :initial '{"state":"loading"}' "sleep 5; socat -u UNIX-CLIENT:/tmp/hass-light-eww-output.sock -")
 {{- end}}
 
-(deflisten workspaces :initial "[]" "bash scripts/get-workspaces")
-(deflisten current_workspace :initial "[1]" "bash scripts/get-active-workspace")
+(deflisten workspaces :initial "[]" "scripts/get-workspaces")
+(deflisten current_workspace :initial "[1]" "scripts/get-active-workspace")
 
 (defwidget workspaces [monitor_id monitor_index]
-    (eventbox :onscroll "bash scripts/change-active-workspace ${monitor_id} {} ${current_workspace[monitor_id]}" :class "workspaces-widget"
+    (eventbox :onscroll "scripts/change-active-workspace ${monitor_id} {} ${current_workspace[monitor_id]}" :class "workspaces-widget"
       (box :halign "start" :space-evenly true
         ; (label :text "${workspaces}${current_workspace}" :visible false)
         (for workspace in {workspaces[monitor_index]}

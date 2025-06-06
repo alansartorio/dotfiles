@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+
+rebind-workspaces() {
+    arrangement=$(workspace-arranger)
+    instructions=$(echo $arrangement |
+        jq 'map(.monitor as $monitor | .workspaces | map({monitor: $monitor, workspace: .})) | flatten' |
+        jq -r 'map("keyword workspace \(.workspace),monitor:\(.monitor.name); dispatch moveworkspacetomonitor \(.workspace) \(.monitor.id)") | join("; ")')
+
+    set -x
+    hyprctl --batch "reload; $instructions"
+    set +x
+}
+
+handle() {
+  case $1 in
+    monitoraddedv2*|monitorremovedv2*)
+        rebind-workspaces
+        ;;
+  esac
+}
+
+rebind-workspaces
+
+socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do handle "$line"; done

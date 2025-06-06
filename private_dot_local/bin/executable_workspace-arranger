@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+import subprocess
+import json
+import sys
+from dataclasses import dataclass
+
+
+@dataclass
+class Monitor:
+    name: str
+    id: int
+
+
+def get_monitors() -> list[Monitor]:
+    monitors_str = subprocess.run(
+        ("hyprctl", "monitors", "-j"), capture_output=True
+    ).stdout.decode()
+    return [
+        Monitor(monitor["name"], monitor["id"]) for monitor in json.loads(monitors_str)
+    ]
+
+
+total_workspace_amount = 10
+workspace_amount = total_workspace_amount
+
+output = []
+monitors = get_monitors()
+monitor_count = len(monitors)
+
+for monitor in monitors:
+    workspaces_in_monitor = workspace_amount // monitor_count
+    output.append(
+        {
+            "monitor": {
+                "name": monitor.name,
+                "id": monitor.id,
+            },
+            "workspaces": [
+                n + total_workspace_amount - workspace_amount + 1
+                for n in range(workspaces_in_monitor)
+            ],
+        }
+    )
+    workspace_amount -= workspaces_in_monitor
+    monitor_count -= 1
+
+json.dump(output, sys.stdout)
