@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 
-killall hass-light-eww
+killall -q hass-light-eww
+rm -f /tmp/hass-light.sock
 socat -u UNIX-RECV:/tmp/hass-light.sock - | hass-light-eww &
