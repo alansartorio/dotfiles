@@ -37,7 +37,33 @@ require("lazy").setup({
 	--{ 'junegunn/fzf',      build = ':call fzf#install()' },
 	--'junegunn/fzf.vim',
 	'neovim/nvim-lspconfig',
-	'hrsh7th/nvim-cmp',
+	{
+		'milanglacier/minuet-ai.nvim',
+		config = function()
+			require('minuet').setup {
+				provider = 'openai_fim_compatible',
+				request_timeout = 20,
+				n_completions = 1,
+				context_window = 2048,
+				provider_options = {
+					openai_fim_compatible = {
+						-- For Windows users, TERM may not be present in environment variables.
+						-- Consider using APPDATA instead.
+						api_key = 'TERM',
+						name = 'Ollama',
+						end_point = 'http://localhost:11434/v1/completions',
+						model = 'qwen2.5-coder:7b',
+						optional = {
+							max_tokens = 56,
+							top_p = 0.9,
+						},
+					},
+				},
+			}
+		end,
+	},
+	--{ 'tzachar/cmp-ai',   dependencies = 'nvim-lua/plenary.nvim' },
+	{ 'hrsh7th/nvim-cmp' },
 	'hrsh7th/cmp-nvim-lsp',
 	{
 		'mrcjkb/rustaceanvim',
@@ -100,7 +126,7 @@ require("lazy").setup({
 	-- Plug 'hashivim/vim-terraform'
 	-- Plug 'leafgarland/typescript-vim'
 	'lambdalisue/suda.vim',
-	{ 'dinhhuy258/vim-database',      branch = 'master',                  build = ':UpdateRemotePlugins' },
+	{ 'dinhhuy258/vim-database',         branch = 'master',  build = ':UpdateRemotePlugins' },
 	{
 		'nvim-lualine/lualine.nvim',
 		dependencies = {
@@ -120,15 +146,15 @@ require("lazy").setup({
 	{
 		"David-Kunz/gen.nvim",
 		opts = {
-			model = "qwen2.5-coder:3b", -- The default model to use.
-			quit_map = "q",    -- set keymap to close the response window
-			retry_map = "<c-r>", -- set keymap to re-send the current prompt
-			accept_map = "<c-cr>", -- set keymap to replace the previous selection with the last result
-			display_mode = "float", -- The display mode. Can be "float" or "split".
+			model = "qwen2.5-coder:7b", -- The default model to use.
+			quit_map = "q",             -- set keymap to close the response window
+			retry_map = "<c-r>",        -- set keymap to re-send the current prompt
+			accept_map = "<c-cr>",      -- set keymap to replace the previous selection with the last result
+			display_mode = "float",     -- The display mode. Can be "float" or "split".
 			host = "localhost",
 			port = "11434",
-			show_prompt = false, -- Shows the Prompt submitted to Ollama.
-			show_model = false, -- Displays which model you are using at the beginning of your chat session.
+			show_prompt = false,   -- Shows the Prompt submitted to Ollama.
+			show_model = false,    -- Displays which model you are using at the beginning of your chat session.
 			no_auto_close = false, -- Never closes the window automatically.
 			init = function(options)
 				--pcall(io.popen, "ollama serve > /dev/null 2>&1 &")
@@ -192,6 +218,12 @@ require("lazy").setup({
 		lazy = false,
 		config = function()
 			vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
+		end,
+	},
+	{
+		'mbbill/undotree',
+		config = function()
+			vim.keymap.set("n", "<C-u>", "<CMD>UndotreeToggle<CR>", { desc = "Toggle UndoTree Panel" })
 		end,
 	},
 })
@@ -272,6 +304,7 @@ cmp.setup({
 		['<C-b>'] = cmp.mapping.scroll_docs(-4),
 		['<C-f>'] = cmp.mapping.scroll_docs(4),
 		['<C-Space>'] = cmp.mapping.complete(),
+		["<C-x>"] = require('minuet').make_cmp_map(),
 		['<C-e>'] = cmp.mapping.abort(),
 		['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
 	}),
@@ -283,7 +316,10 @@ cmp.setup({
 		-- { name = 'snippy' }, -- For snippy users.
 	}, {
 		{ name = 'buffer' },
-	})
+	}),
+	performance = {
+		fetching_timeout = 10000,
+	},
 })
 
 
@@ -365,6 +401,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 		vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
 		vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
 		vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+		vim.keymap.set('n', 'L', vim.diagnostic.open_float, opts)
 		vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
 		vim.keymap.set('n', '<C-K>', vim.lsp.buf.signature_help, opts)
 		vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
@@ -615,13 +652,11 @@ require("oil").setup()
 
 vim.lsp.config("roslyn", {
 	cmd = {
-		"dotnet",
-		"/home/alan/.local/share/nvim/roslyn/Microsoft.CodeAnalysis.LanguageServer.dll",
+		"Microsoft.CodeAnalysis.LanguageServer",
 		"--logLevel=Information",
 		"--extensionLogDirectory=" .. vim.fs.dirname(vim.lsp.get_log_path()),
 		"--stdio",
 	},
-	-- Add other options here
 })
 
 -- vim.opt.statusline^=%{coc#status()}
