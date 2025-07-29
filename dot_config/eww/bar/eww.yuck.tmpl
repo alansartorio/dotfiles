@@ -11,6 +11,12 @@
     (center)
     (sidestuff)))
 
+(defwidget bar-niri []
+  (centerbox :class "bar" :orientation "h"
+    (box)
+    (center)
+    (sidestuff)))
+
 (defwidget center []
   (clock)
   )
@@ -186,3 +192,22 @@
   (bar
     :monitor_id monitor_id
     :monitor_index monitor_index))
+
+(defwindow main-bar-niri [monitor_id monitor_index]
+  :geometry (geometry :x "0%"
+                      :y "0%"
+                      :width "100%"
+                      :height "10px"
+                      :anchor "top center")
+  :exclusive true
+  (bar-niri))
+
+(defwindow secondary-bar-niri [monitor_id monitor_index]
+  :geometry (geometry :x "0%"
+                      :y "0%"
+                      :width "100%"
+                      :height "10px"
+                      :anchor "top center")
+  :exclusive true
+  (bar-niri))
+
