@@ -15,7 +15,7 @@ input {
 spawn-at-startup "mako"
 spawn-at-startup "eww-launcher"
 {{- if .hass}}
-spawn-at-startup "env" HASS_TOKEN="{{(fromToml (include (printf "%s%s" .chezmoi.homeDir "/.local/share/secrets/secrets.toml"))).hass_key}}" HASS_HOST="{{.hass_host}}" "launch-hass-server"
+spawn-at-startup "env" "HASS_TOKEN={{(fromToml (include (printf "%s%s" .chezmoi.homeDir "/.local/share/secrets/secrets.toml"))).hass_key}}" "HASS_HOST={{.hass_host}}" "launch-hass-server"
 {{- end}}
 
 
