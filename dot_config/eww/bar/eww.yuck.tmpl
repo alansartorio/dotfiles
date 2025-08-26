@@ -15,11 +15,12 @@
   (centerbox :class "bar" :orientation "h"
     (box)
     (center)
-    (sidestuff)))
+    (box
+      (systray :halign "start")
+      (sidestuff))))
 
 (defwidget center []
-  (clock)
-  )
+  (clock))
 
 (defwidget battery [id]
   (box
@@ -29,14 +30,22 @@
               :text "${round((EWW_BATTERY[id].capacity), 0)}% ${EWW_BATTERY[id].status}"
     ))))
 
+(defvar expand_clock false)
+
 (defwidget clock []
-  (button :class "clock" :valign "baseline" :onclick "scripts/popup_calendar"
-    (box :space-evenly false
-      (box :class "clock-time" (label :text time))
-      (box :class "clock-date" (label :text date))
+  (button :class "clock" :valign "baseline" :onclick "scripts/popup_calendar" :onrightclick "${EWW_CMD} update expand_clock=${!expand_clock}"
+    (stack :transition "slidedown" :selected {expand_clock ? 1 : 0}
+      (box :space-evenly false
+        (box :class "clock-time" (label :text {time}))
+        (box :class "clock-date" (label :text {date}))
+      )
+      (box :space-evenly false
+        (box :class "clock-time" (label :text {time + ":${time_sec}"}))
+        (box :class "clock-date" (label :text {date_num}))
       )
     )
   )
+)
 
 
 ;; Calendar window
@@ -86,9 +95,45 @@
           ;:valign "center"
           ;"ES")
           ;)))
+(defvar expand_cpu true)
+
+(defwidget retracted_cpu []
+    (metric :halign "start" :label "" :icon-offset {-0.14} :onclick "${EWW_CMD} update expand_cpu=${!expand_cpu}" :value "${EWW_CPU.avg}"))
+(defwidget expanded_cpu []
+  (eventbox
+    :onclick "${EWW_CMD} update expand_cpu=${!expand_cpu}"
+    (overlay :halign "start"
+      (box
+        :vexpand true
+        :valign "center"
+        :orientation "h"
+        :visible {expand_cpu}
+        :class "cpu-usage"
+        (for cpu in {EWW_CPU.cores}
+          (transform
+            ;:scale-y "${cpu.usage}%"
+            :translate-y "${100 - cpu.usage}%"
+            (box
+              :valign "fill"
+              :width 5
+              :class "cpu-usage-bar"
+              :style {cpu.usage > 70 ? "background-color: orange" : ""})
+          )
+      ))
+      (metric :halign "start" :label "" :icon-offset {-0.14} :fill true :value 100)
+    )
+  )
+)
 
 (defwidget sidestuff []
   (box :class "sidestuff" :orientation "h" :space-evenly false :halign "end"
+    {{- if .vpn_connection }}
+    (metric :label {vpn ? "" : ""}
+            :value {vpn ? 100 : 0}
+            :icon-offset {-0.05}
+            :onclick "notify-send \"$(nmcli con ${vpn ? "down" : "up"} \"{{.vpn_connection}}\" 2>&1)\" &"
+            :onrightclick "nm-connection-editor &")
+    {{- end }}
     (metric :label {volume.mute ? "󰖁" : "󰕾"}
             :value {volume.volume}
             :onscroll "pamixer --allow-boost --set-limit 150 $(test {} = up && echo -i || echo -d) 1"
@@ -97,11 +142,17 @@
     {{- if .hass}}
     (metric :label {hass-lamp.state == "loading" || hass-lamp.type == "loading" ? "󰇘" : hass-lamp.state == "off" ? "󰹐" : hass-lamp.type == "brightness" ? "󰛨" : "󰔏"}
             :value {hass-lamp.value ?: 0}
+            :icon-offset {hass-lamp.state == "loading" || hass-lamp.type == "loading" ? 0 : hass-lamp.state == "off" ? -0.05 : hass-lamp.type == "brightness" ? -0.08 : 0}
             :onscroll "socat -u - UNIX-SENDTO:/tmp/hass-light.sock <<< $(test {} = up && printf increase || printf decrease)"
             :onclick "socat -u - UNIX-SENDTO:/tmp/hass-light.sock <<< toggle_state"
             :onrightclick "socat -u - UNIX-SENDTO:/tmp/hass-light.sock <<< toggle_mode")
     {{- end}}
-    (metric :label "󰍛"
+    (stack :transition "crossfade" :selected {expand_cpu ? 1 : 0}
+      (retracted_cpu)
+      (expanded_cpu)
+    )
+    (metric :label ""
+            :icon-offset {-0.14}
             :value {EWW_RAM.used_mem_perc})
     (metric :label "󱐖"
             :value {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)})
@@ -144,17 +195,13 @@
     {music != "" ? "🎵${music}" : ""}))
 
 
-(defwidget metric [label value ?onscroll ?onclick ?onrightclick]
-  (box :style "margin: 0 6px"
+(defwidget metric [label value ?icon-offset ?halign ?visible ?onscroll ?onclick ?onrightclick ?fill ?label-classes]
+  (box :visible visible :halign halign :style "margin: 0 6px"
     (eventbox :onscroll onscroll
       (overlay
-        (circular-progress :width 30 :class "circular-indicator" :value "${value <= 100 ? value : 100}" :thickness 3)
-        (button :class "label" :onclick onclick :onrightclick onrightclick label)
-        ;(scale :min 0
-               ;:max 101
-               ;:active {onchange != ""}
-               ;:value value
-               ;:onchange onchange)
+        (circular-progress :width 30 :class "circular-indicator" :value "${value <= 100 ? value : 100}" :thickness {(fill ?: false) ? 30 / 2 : 3})
+        (button :class "label ${label-classes}" :hexpand true :vexpand true :onclick onclick :onrightclick onrightclick
+            (label :hexpand true :vexpand true :justify "center" :xalign {(icon-offset ?: 0) + 0.5} :yalign 0.5 :text label))
       ))))
 
 
@@ -162,12 +209,21 @@
 (deflisten music :initial ""
   "playerctl --follow metadata --format {{"'{{ artist }} - {{ title }}'"}} || true")
 
+{{- if .vpn_connection }}
+(deflisten vpn :initial ""
+  "scripts/poll-vpn-status \"{{.vpn_connection}}\"")
+{{- end }}
+
 (deflisten volume :initial "{\"volume\": 0, \"mute\": false}"
   "scripts/getvol")
 
-(defpoll time :interval "10s"
+(defpoll time_sec :interval "1s"
+  "date '+%S'")
+(defpoll time :interval "1s"
   "date '+%H:%M'")
 
+(defpoll date_num :interval "10s"
+  "date '+%Y-%m-%d'")
 (defpoll date :interval "10s"
   "date '+%b %d, %Y'")
 

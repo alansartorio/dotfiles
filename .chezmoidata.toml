@@ -9,3 +9,4 @@ auto_scaling = true
 kde_connect = false
 artix = false
 keyboard_model = "at-translated-set-2-keyboard"
+vpn_connection = false

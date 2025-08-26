@@ -113,6 +113,10 @@ $alt-text: $nord0;
   border-radius: 10px;
 }
 
+.dark-text {
+  color: $alt-text;
+}
+
 // Calendar
 .cal-box {
   background-color: $dark-background;
@@ -155,4 +159,16 @@ $alt-text: $nord0;
       }
     }
   }
+}
+
+.cpu-usage {
+  background-color: $light-background;
+  border-radius: 0 10px 10px 0;
+  padding: 0 10px 0 20px;
+  margin: 0 0 0 20px;
+  min-height: 25px;
+}
+
+.cpu-usage-bar {
+  background-color: $primary-color;
 }
