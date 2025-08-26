@@ -97,10 +97,10 @@
           ;)))
 (defvar expand_cpu true)
 
-(defwidget expandable [expanded label ?onretractedclick ?onexpandedclick ?icon-offset ?value]
+(defwidget expandable [expanded label ?onretractedclick ?onretractedrightclick ?onexpandedclick ?onexpandedrightclick ?icon-offset ?value]
   (stack :transition "crossfade" :selected {expanded ? 1 : 0}
-    (metric :halign "start" :label label :icon-offset icon-offset :onclick onretractedclick :value value)
-    (button :onclick onexpandedclick
+    (metric :halign "start" :label label :icon-offset icon-offset :onclick onretractedclick :onrightclick onretractedrightclick :value value)
+    (button :onclick onexpandedclick :onrightclick onexpandedrightclick
       (overlay :halign "start"
         (box
           :hexpand true
@@ -151,6 +151,7 @@
     :label ""
     :icon-offset {-0.1}
     :onretractedclick "alacritty -e env CLOCKIN_PROJECT={{.clockin_project}} clockin &"
+    :onretractedrightclick "alacritty -e env CLOCKIN_PROJECT={{.clockin_project}} clockin edit &"
     :value 0
     (box
       :vexpand true
