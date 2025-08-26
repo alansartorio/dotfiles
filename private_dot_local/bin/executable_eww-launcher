@@ -60,10 +60,10 @@ open-bar-niri() {
     eww open --screen "$monitor_model" -c ~/.config/eww/bar --id $monitor_id $bar --arg "monitor_id=$monitor_id" --arg "monitor_index=$monitor_id"
 }
 reload-bars-niri() {
-  workspaces=$1
+  monitors=$1
   echo "closing all"
   eww close-all -c ~/.config/eww/bar
-  jq -r '[.[] | .output] | unique | .[]' <<<$workspaces | while read output; do
+  echo "$monitors" | while read output; do
       echo opening $output
       open-bar-niri $output
   done
@@ -71,14 +71,21 @@ reload-bars-niri() {
 handle-niri() {
   workspaces=$(jq -c '.WorkspacesChanged.workspaces'<<<$1)
   if ! [ "$workspaces" = "null" ]; then
-    reload-bars-niri $workspaces
+    active_monitors=$(jq -r '[.[] | .output] | unique | sort_by(.) | .[]' <<<$workspaces)
+    if [ "$previous_monitors" != "$active_monitors" ]; then
+      reload-bars-niri "$active_monitors"
+    else
+      echo "not reloading, same monitors"
+    fi
   fi
+  previous_monitors=$active_monitors
 }
 
 if pidof niri; then
-    niri msg -j event-stream | while read -r line; do handle-niri "$line"; done
-else
+  niri msg -j event-stream | while read -r line; do handle-niri "$line"; done
+elif pidof Hyprland; then
   reload-bars
-
-    socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do handle "$line"; done
+  socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do handle "$line"; done
+else
+  echo "unsupported desktop environment"
 fi
