@@ -1,0 +1,197 @@
+#!/usr/bin/env rust-script
+//! ```cargo
+//! [dependencies]
+//! anyhow = "*"
+//! async-watch = "*"
+//! async-std = { version = "*", features = ["attributes"] }
+//! async-process = "*"
+//! futures-lite = "*"
+//! futures = "*"
+//! serde_json = "*"
+//! serde = { version = "*", features = ["derive"] }
+//! ```
+#![feature(exit_status_error)]
+
+use anyhow::{anyhow, Result, Context};
+use async_process::{Command, Stdio};
+use std::time::{Duration, Instant};
+use futures_lite::{io::BufReader, prelude::*};
+use async_watch::{Receiver, Sender};
+use futures::{select, FutureExt, pin_mut};
+use futures::future::join_all;
+use async_std::{task};
+use serde::{Serialize, Serializer};
+
+fn get_hms(x: &Duration) -> (u64, u8, u8) {
+    let mut secs = x.as_secs();
+    let mut mins = secs / 60;
+    let hours = mins / 60;
+    secs -= mins * 60;
+    mins -= hours * 60;
+
+    (hours, mins as u8, secs as u8)
+}
+
+fn format_duration<S>(x: &Duration, s: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer {
+    let (hours, mins, secs) = get_hms(x);
+    if hours > 0 {
+        s.serialize_str(&format!("{}:{:02}:{:02}", hours, mins, secs))
+    } else if mins > 0 {
+        s.serialize_str(&format!("{}:{:02}", mins, secs))
+    } else {
+        s.serialize_str(&format!("{}s", secs))
+    }
+}
+
+#[derive(Serialize)]
+struct Output {
+    session: SessionStatus,
+    #[serde(serialize_with = "format_duration")]
+    today_time: Duration,
+    #[serde(serialize_with = "format_duration")]
+    last_session_time: Duration,
+}
+
+struct Args {
+    project: String,
+}
+
+fn parse_args() -> Result<Args> {
+    let mut args = std::env::args();
+    args.next().unwrap();
+    let project = args
+        .next()
+        .ok_or(anyhow!("missing \"project\" argument"))?;
+    Ok(Args { project })
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+enum SessionStatus {
+    Finished,
+    Started
+}
+
+
+#[derive(Debug)]
+enum WorkingPeriod {
+    Today,
+    LastSession
+}
+
+async fn subscribe_to_clockin_project(project: String, tx: Sender<SessionStatus>) -> Result<()> {
+    let mut clockin_process = Command::new("clockin")
+        .stderr(Stdio::null())
+        .stdout(Stdio::piped())
+        //.stdin(Stdio::null())
+        .env("CLOCKIN_PROJECT", project)
+        .arg("subscribe")
+        .spawn()?;
+
+    let output = clockin_process.stdout.take().unwrap();
+    let output = BufReader::new(output);
+
+    output
+        .lines()
+        .map(|line| match line.as_ref().map(|s|s.as_str()) {
+        Ok("finished") => SessionStatus::Finished,
+        Ok("started") => SessionStatus::Started,
+        Ok(line) => unreachable!("unexpected clockin output line {line}"),
+        Err(err) => panic!("unexpected error {err}"),
+    }).for_each(|s| tx.send(s).unwrap()).await;
+
+    Ok(())
+}
+
+async fn get_worked_time(project: &str, period: WorkingPeriod) -> Result<Duration> {
+    let output = Command::new("clockin")
+        .env("CLOCKIN_PROJECT", project)
+        .arg("get-worked-time")
+        .arg(match period {
+            WorkingPeriod::Today => "today",
+            WorkingPeriod::LastSession => "last-session",
+        })
+        .output().await?;
+    if !output.status.success() {
+        let error_msg = String::from_utf8(output.stdout)?;
+        return Err(anyhow!("error while running clockin: {}", error_msg));
+    }
+    let output = String::from_utf8(output.stdout)?;
+    let res = output.trim().parse().with_context(|| anyhow!("clockin output: {}", output))?;
+
+    Ok(Duration::from_secs_f64(res))
+}
+
+
+fn print_status(status: Output) {
+println!("{}", serde_json::to_string(&status).unwrap());
+}
+
+struct Times {
+    today: Duration,
+    last_session: Duration,
+}
+
+
+async fn print_until_stopped(times: Times, last_session_start: Instant, rx: &mut Receiver<SessionStatus>) {
+    loop {
+        let recv = rx.recv().fuse();
+        let timeout = task::sleep(Duration::from_secs(1)).fuse();
+
+        pin_mut!(recv, timeout);
+
+        print_status(Output {
+            session: SessionStatus::Started,
+            today_time: times.today + last_session_start.elapsed(),
+            last_session_time: times.last_session + last_session_start.elapsed(),
+        });
+        select! {
+            status = recv => {
+                if status.unwrap() == SessionStatus::Finished {
+                    return;
+                }
+            }
+            () = timeout => { }
+        }
+    }
+}
+
+async fn get_times(project: &str) -> Result<Times> {
+    let today= get_worked_time(&project, WorkingPeriod::Today).await?;
+    let last_session= get_worked_time(&project, WorkingPeriod::LastSession).await?;
+
+    Ok(Times{
+        today, last_session
+    })
+}
+
+async fn printer(project: String, mut rx: Receiver<SessionStatus>) {
+    loop {
+        let state = rx.recv().await.unwrap();
+        let times = get_times(&project).await.unwrap();
+        if state  == SessionStatus::Started {
+            print_until_stopped(times, Instant::now(), &mut rx).await;
+        }
+        let times = get_times(&project).await.unwrap();
+        print_status(Output{
+            session: SessionStatus::Finished,
+            today_time: times.today,
+            last_session_time: times.last_session
+        });
+    }
+}
+
+#[async_std::main]
+async fn main() {
+    let args = parse_args().expect("invalid cli arguments");
+
+    let (tx, rx) = async_watch::channel(SessionStatus::Finished);
+
+    let subscription = subscribe_to_clockin_project(args.project.clone(), tx).map(|_| ());
+
+    let printer = printer(args.project, rx);
+
+    join_all(vec![task::spawn(subscription), task::spawn(printer)]).await;
+}

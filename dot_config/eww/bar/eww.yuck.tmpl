@@ -141,9 +141,34 @@
     )
 )
 
+{{- if .clockin_project }}
+
+(deflisten clockin "scripts/clockin-integration {{.clockin_project}}")
+
+(defwidget clockin []
+  (expandable
+    :expanded {clockin.session == "started"}
+    :label ""
+    :icon-offset {-0.1}
+    :onretractedclick "alacritty -e env CLOCKIN_PROJECT={{.clockin_project}} clockin &"
+    :value 0
+    (box
+      :vexpand true
+      :valign "center"
+      :height 25
+      :orientation "h"
+      :class "expander"
+      (label :text "${clockin.last_session_time} / ${clockin.today_time}")
+    )
+  )
+)
+{{ end }}
 
 (defwidget sidestuff []
   (box :class "sidestuff" :orientation "h" :space-evenly false :halign "end"
+    {{- if .clockin_project }}
+    (clockin)
+    {{- end }}
     {{- if .vpn_connection }}
     (metric :label {vpn ? "" : ""}
             :value {vpn ? 100 : 0}
