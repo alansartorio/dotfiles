@@ -11,12 +11,15 @@
     (center)
     (sidestuff)))
 
+(defvar show_tray false)
+
 (defwidget bar-niri []
   (centerbox :class "bar" :orientation "h"
     (box)
     (center)
     (box
-      (systray :halign "start")
+      (revealer :reveal {show_tray} :duration 0
+        (systray :prepend-new true :halign "start"))
       (sidestuff))))
 
 (defwidget center []
@@ -33,7 +36,12 @@
 (defvar expand_clock false)
 
 (defwidget clock []
-  (button :class "clock" :valign "baseline" :onclick "scripts/popup_calendar" :onrightclick "${EWW_CMD} update expand_clock=${!expand_clock}"
+  (button
+    :class "clock"
+    :valign "baseline"
+    :onclick "scripts/popup_calendar"
+    :onrightclick "${EWW_CMD} update expand_clock=${!expand_clock}"
+    :onmiddleclick "${EWW_CMD} update show_tray=${!show_tray}"
     (stack :transition "slidedown" :selected {expand_clock ? 1 : 0}
       (box :space-evenly false
         (box :class "clock-time" (label :text {time}))
