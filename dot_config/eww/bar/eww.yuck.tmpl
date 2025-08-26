@@ -97,18 +97,36 @@
           ;)))
 (defvar expand_cpu true)
 
-(defwidget retracted_cpu []
-    (metric :halign "start" :label "" :icon-offset {-0.14} :onclick "${EWW_CMD} update expand_cpu=${!expand_cpu}" :value "${EWW_CPU.avg}"))
-(defwidget expanded_cpu []
-  (eventbox
-    :onclick "${EWW_CMD} update expand_cpu=${!expand_cpu}"
-    (overlay :halign "start"
+(defwidget expandable [expanded label ?onretractedclick ?onexpandedclick ?icon-offset ?value]
+  (stack :transition "crossfade" :selected {expanded ? 1 : 0}
+    (metric :halign "start" :label label :icon-offset icon-offset :onclick onretractedclick :value value)
+    (button :onclick onexpandedclick
+      (overlay :halign "start"
+        (box
+          :hexpand true
+          :vexpand true
+          (children)
+        )
+        (metric :halign "start" :label label :icon-offset icon-offset :fill true :value 100)
+      )
+    )
+  )
+)
+
+(defwidget expandable_cpu []
+  (expandable
+    :expanded {expand_cpu}
+    :label ""
+    :icon-offset {-0.14}
+    :onretractedclick "${EWW_CMD} update expand_cpu=${!expand_cpu}"
+    :onexpandedclick "${EWW_CMD} update expand_cpu=${!expand_cpu}"
+    :value "${EWW_CPU.avg}"
       (box
         :vexpand true
         :valign "center"
         :orientation "h"
         :visible {expand_cpu}
-        :class "cpu-usage"
+        :class "expander cpu-usage"
         (for cpu in {EWW_CPU.cores}
           (transform
             ;:scale-y "${cpu.usage}%"
@@ -120,10 +138,9 @@
               :style {cpu.usage > 70 ? "background-color: orange" : ""})
           )
       ))
-      (metric :halign "start" :label "" :icon-offset {-0.14} :fill true :value 100)
     )
-  )
 )
+
 
 (defwidget sidestuff []
   (box :class "sidestuff" :orientation "h" :space-evenly false :halign "end"
@@ -147,10 +164,7 @@
             :onclick "socat -u - UNIX-SENDTO:/tmp/hass-light.sock <<< toggle_state"
             :onrightclick "socat -u - UNIX-SENDTO:/tmp/hass-light.sock <<< toggle_mode")
     {{- end}}
-    (stack :transition "crossfade" :selected {expand_cpu ? 1 : 0}
-      (retracted_cpu)
-      (expanded_cpu)
-    )
+    (expandable_cpu)
     (metric :label ""
             :icon-offset {-0.14}
             :value {EWW_RAM.used_mem_perc})

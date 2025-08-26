@@ -161,11 +161,14 @@ $alt-text: $nord0;
   }
 }
 
-.cpu-usage {
+.expander {
   background-color: $light-background;
   border-radius: 0 10px 10px 0;
   padding: 0 10px 0 20px;
   margin: 0 0 0 20px;
+}
+
+.cpu-usage {
   min-height: 25px;
 }
 
