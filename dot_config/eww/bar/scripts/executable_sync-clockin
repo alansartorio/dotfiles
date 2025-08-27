@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+eval $EWW_CMD update clockin_synching=true
+
+clockin exec '( git add . && git commit -m "sync" ) || git pull --rebase && git push' |
+    xargs -0 notify-send
+
+eval $EWW_CMD update clockin_synching=false

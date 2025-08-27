@@ -166,15 +166,16 @@
 {{- if .clockin_project }}
 
 (deflisten clockin "scripts/clockin-integration {{.clockin_project}}")
+(defvar clockin_synching false)
 
 (defwidget clockin []
   (expandable
     :expanded {clockin.session == "started"}
-    :label ""
-    :icon-offset {-0.1}
+    :label {clockin_synching ? "󰇘" : ""}
+    :icon-offset {clockin_synching ? 0 : -0.1}
     :onretractedclick "alacritty -e env CLOCKIN_PROJECT={{.clockin_project}} clockin &"
     :onretractedrightclick "alacritty -e env CLOCKIN_PROJECT={{.clockin_project}} clockin edit &"
-    :onretractedmiddleclick `clockin exec '( git add . && git commit -m "sync" ) || git pull --rebase && git push' | xargs -0 notify-send`
+    :onretractedmiddleclick "env 'EWW_CMD=${EWW_CMD}' '${EWW_CONFIG_DIR}/scripts/sync-clockin' &"
     :value 0
     (box
       :vexpand true
