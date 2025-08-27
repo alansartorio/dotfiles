@@ -105,10 +105,24 @@
           ;)))
 (defvar expand_cpu true)
 
-(defwidget expandable [expanded label ?onretractedclick ?onretractedrightclick ?onexpandedclick ?onexpandedrightclick ?icon-offset ?value]
+(defwidget expandable [
+    expanded label
+    ?onretractedclick ?onretractedmiddleclick ?onretractedrightclick
+    ?onexpandedclick ?onexpandedmiddleclick ?onexpandedrightclick
+    ?icon-offset ?value]
   (stack :transition "crossfade" :selected {expanded ? 1 : 0}
-    (metric :halign "start" :label label :icon-offset icon-offset :onclick onretractedclick :onrightclick onretractedrightclick :value value)
-    (button :onclick onexpandedclick :onrightclick onexpandedrightclick
+    (metric
+        :halign "start"
+        :label label
+        :icon-offset icon-offset
+        :onclick onretractedclick
+        :onmiddleclick onretractedmiddleclick
+        :onrightclick onretractedrightclick
+        :value value)
+    (button
+        :onclick onexpandedclick
+        :onmiddleclick onexpandedmiddleclick
+        :onrightclick onexpandedrightclick
       (overlay :halign "start"
         (box
           :hexpand true
@@ -160,6 +174,7 @@
     :icon-offset {-0.1}
     :onretractedclick "alacritty -e env CLOCKIN_PROJECT={{.clockin_project}} clockin &"
     :onretractedrightclick "alacritty -e env CLOCKIN_PROJECT={{.clockin_project}} clockin edit &"
+    :onretractedmiddleclick `clockin exec '( git add . && git commit -m "sync" ) || git pull --rebase && git push' | xargs -0 notify-send`
     :value 0
     (box
       :vexpand true
@@ -243,13 +258,19 @@
     {music != "" ? "🎵${music}" : ""}))
 
 
-(defwidget metric [label value ?icon-offset ?halign ?visible ?onscroll ?onclick ?onrightclick ?fill ?label-classes]
+(defwidget metric [label value ?icon-offset ?halign ?visible ?onscroll
+    ?onclick ?onmiddleclick ?onrightclick
+    ?fill ?label-classes]
   (box :visible visible :halign halign :style "margin: 0 6px"
     (eventbox :onscroll onscroll
       (overlay
         (circular-progress :width 30 :class "circular-indicator" :value "${value <= 100 ? value : 100}" :thickness {(fill ?: false) ? 30 / 2 : 3})
-        (button :class "label ${label-classes}" :hexpand true :vexpand true :onclick onclick :onrightclick onrightclick
-            (label :hexpand true :vexpand true :justify "center" :xalign {(icon-offset ?: 0) + 0.5} :yalign 0.5 :text label))
+        (button
+            :class "label ${label-classes}" :hexpand true :vexpand true
+            :onclick onclick :onrightclick onrightclick :onmiddleclick onmiddleclick
+            (label
+                :hexpand true :vexpand true :justify "center" :xalign {(icon-offset ?: 0) + 0.5} :yalign 0.5
+                :text label))
       ))))
 
 
