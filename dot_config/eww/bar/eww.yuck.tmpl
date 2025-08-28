@@ -17,10 +17,13 @@
   (centerbox :class "bar" :orientation "h"
     (box)
     (center)
-    (box
-      (revealer :reveal {show_tray} :duration 0
+    (box :space-evenly false
+      (revealer :reveal {show_tray} :duration 0 :halign "start"
         (systray :prepend-new true :halign "start"))
-      (sidestuff))))
+      (box :hexpand true)
+      (sidestuff))
+  )
+)
 
 (defwidget center []
   (clock))
