@@ -59,6 +59,16 @@ output "LG Electronics 24GL600F 0x000731FE" {
     backdrop-color "#001100"
 }
 
+output "AU Optronics 0x21ED Unknown" {
+    mode "1920x1080@60"
+    scale 1.0
+    position x=0 y=0
+    variable-refresh-rate // on-demand=true
+    focus-at-startup
+    background-color "#121319"
+    backdrop-color "#001100"
+}
+
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
