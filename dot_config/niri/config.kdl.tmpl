@@ -19,9 +19,8 @@ spawn-at-startup "env" "HASS_TOKEN={{(fromToml (include (printf "%s%s" .chezmoi.
 {{- end}}
 
 
-//xwayland-satellite {
-//}
-spawn-at-startup "xwayland-satellite"
+xwayland-satellite {
+}
 
 environment {
     DISPLAY ":0"
