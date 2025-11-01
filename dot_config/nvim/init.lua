@@ -67,8 +67,22 @@ require("lazy").setup({
 	'hrsh7th/cmp-nvim-lsp',
 	{
 		'mrcjkb/rustaceanvim',
-		version = '^5', -- Recommended
-		ft = { 'rust' },
+		version = '^6',
+		config = function()
+			vim.g.rustaceanvim = {
+				server = {
+					default_settings = {
+						-- rust-analyzer language server configuration
+						['rust-analyzer'] = {
+							cargo = {
+								allFeatures = true,
+							},
+						},
+					},
+				},
+			}
+		end,
+		lazy = false
 	},
 	--'mikelue/vim-maven-plugin',
 	'vim-test/vim-test',
@@ -139,10 +153,10 @@ require("lazy").setup({
 	'wannesm/wmgraphviz.vim',
 	{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
 	{
-		'ThePrimeagen/harpoon',
-		dependencies = { 'nvim-lua/plenary.nvim' }
+		"ThePrimeagen/harpoon",
+		branch = "harpoon2",
+		requires = { { "nvim-lua/plenary.nvim" } }
 	},
-
 	{
 		"David-Kunz/gen.nvim",
 		opts = {
@@ -326,64 +340,51 @@ cmp.setup({
 -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-local lspconfig = require('lspconfig')
-lspconfig.pyright.setup {
+function enable_lsp(name, config)
+	config = config or { capabilities = capabilities }
+	vim.lsp.config(name, config)
+	vim.lsp.enable(name)
+end
+
+enable_lsp("basedpyright", {
 	capabilities = capabilities
-}
-lspconfig.lua_ls.setup {
-	capabilities = capabilities
-}
-lspconfig.ts_ls.setup {
+})
+enable_lsp("lua_ls")
+enable_lsp("ts_ls", {
 	on_init = function(client)
 		client.server_capabilities.documentFormattingProvider = false
 	end,
 	capabilities = capabilities
-}
-lspconfig.clangd.setup {
+})
+enable_lsp("clangd", {
 	capabilities = capabilities,
 	filetypes = { "c", "cpp", "objc", "objcpp", "cuda" }, -- exclude "proto".
-}
-lspconfig.terraformls.setup {
+})
+enable_lsp("terraformls", {
 	capabilities = capabilities,
-}
-lspconfig.r_language_server.setup {
+})
+enable_lsp("r_language_server", {
 	capabilities = capabilities,
-}
-lspconfig.arduino_language_server.setup {
+})
+enable_lsp("arduino_language_server", {
 	capabilities = capabilities,
-}
---lspconfig.rust_analyzer.setup {
----- Server-specific settings. See `:help lspconfig-setup`
---settings = {
---['rust-analyzer'] = {},
---},
---capabilities = capabilities
---}
---local rt = require("rust-tools")
-
---rt.setup({
---server = {
---on_attach = function(_, bufnr)
----- Hover actions
---vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
----- Code action groups
---vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
---end,
---},
---})
-lspconfig.cssls.setup {}
-lspconfig.gopls.setup {
+})
+enable_lsp("bashls", {
 	capabilities = capabilities,
-}
-lspconfig.nixd.setup {
+})
+enable_lsp("cssls", {})
+enable_lsp("gopls", {
 	capabilities = capabilities,
-}
+})
+enable_lsp("nixd", {
+	capabilities = capabilities,
+})
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
-lspconfig.html.setup {
+enable_lsp("html", {
 	capabilities = capabilities,
-}
+})
 --lspconfig.java_language_server.setup {}
 --lspconfig.jdtls.setup {}
 
@@ -416,12 +417,23 @@ vim.api.nvim_create_autocmd('LspAttach', {
 		vim.keymap.set('n', '<A-F>', function()
 			vim.lsp.buf.format { async = true }
 		end, opts)
+		vim.keymap.set('v', '<A-F>', function()
+			vim.lsp.buf.format {
+				async = true,
+				range = {
+					["start"] = vim.api.nvim_buf_get_mark(0, "<"),
+					["end"] = vim.api.nvim_buf_get_mark(0, ">"),
+				}
+			}
+		end, opts)
 	end,
 })
 
+local harpoon = require("harpoon")
+harpoon:setup()
 
-vim.keymap.set('n', '<space>a', require "harpoon.mark".add_file)
-vim.keymap.set('n', '<space>h', require "harpoon.ui".toggle_quick_menu)
+vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
+vim.keymap.set("n", "<space>h", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
 
 vim.cmd "colorscheme gruvbox"
 
