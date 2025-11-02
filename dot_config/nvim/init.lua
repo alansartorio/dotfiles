@@ -339,6 +339,7 @@ cmp.setup({
 
 -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 function enable_lsp(name, config)
 	config = config or { capabilities = capabilities }
@@ -346,10 +347,56 @@ function enable_lsp(name, config)
 	vim.lsp.enable(name)
 end
 
-enable_lsp("basedpyright", {
-	capabilities = capabilities
+enable_lsp("basedpyright")
+enable_lsp("lua_ls", {
+	capabilities = capabilities,
+	on_init = function(client)
+		if client.workspace_folders then
+			local path = client.workspace_folders[1].name
+			if
+				path ~= vim.fn.stdpath('config')
+				and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc'))
+			then
+				return
+			end
+		end
+
+		client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+			runtime = {
+				-- Tell the language server which version of Lua you're using (most
+				-- likely LuaJIT in the case of Neovim)
+				version = 'LuaJIT',
+				-- Tell the language server how to find Lua modules same way as Neovim
+				-- (see `:h lua-module-load`)
+				path = {
+					'lua/?.lua',
+					'lua/?/init.lua',
+				},
+			},
+			-- Make the server aware of Neovim runtime files
+			workspace = {
+				checkThirdParty = false,
+				library = {
+					vim.env.VIMRUNTIME
+					-- Depending on the usage, you might want to add additional paths
+					-- here.
+					-- '${3rd}/luv/library'
+					-- '${3rd}/busted/library'
+				}
+				-- Or pull in all of 'runtimepath'.
+				-- NOTE: this is a lot slower and will cause issues when working on
+				-- your own configuration.
+				-- See https://github.com/neovim/nvim-lspconfig/issues/3189
+				-- library = {
+				--   vim.api.nvim_get_runtime_file('', true),
+				-- }
+			}
+		})
+	end,
+	settings = {
+		Lua = {}
+	}
 })
-enable_lsp("lua_ls")
 enable_lsp("ts_ls", {
 	on_init = function(client)
 		client.server_capabilities.documentFormattingProvider = false
@@ -360,31 +407,14 @@ enable_lsp("clangd", {
 	capabilities = capabilities,
 	filetypes = { "c", "cpp", "objc", "objcpp", "cuda" }, -- exclude "proto".
 })
-enable_lsp("terraformls", {
-	capabilities = capabilities,
-})
-enable_lsp("r_language_server", {
-	capabilities = capabilities,
-})
-enable_lsp("arduino_language_server", {
-	capabilities = capabilities,
-})
-enable_lsp("bashls", {
-	capabilities = capabilities,
-})
+enable_lsp("terraformls")
+enable_lsp("r_language_server")
+enable_lsp("arduino_language_server")
+enable_lsp("bashls")
 enable_lsp("cssls", {})
-enable_lsp("gopls", {
-	capabilities = capabilities,
-})
-enable_lsp("nixd", {
-	capabilities = capabilities,
-})
-
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.completion.completionItem.snippetSupport = true
-enable_lsp("html", {
-	capabilities = capabilities,
-})
+enable_lsp("gopls")
+enable_lsp("nixd")
+enable_lsp("html")
 --lspconfig.java_language_server.setup {}
 --lspconfig.jdtls.setup {}
 
