@@ -248,6 +248,7 @@ require("lazy").setup({
 			vim.keymap.set("n", "<C-u>", "<CMD>UndotreeToggle<CR>", { desc = "Toggle UndoTree Panel" })
 		end,
 	},
+	'kalafut/vim-taskjuggler',
 })
 
 -- TODO: find fix for nixos missing json5 lua lib
