@@ -126,7 +126,15 @@ require("lazy").setup({
 		end,
 	},
 	-- Plug 'hsanson/vim-android'
-	{ 'iamcco/markdown-preview.nvim', build = ':call mkdp#util#install()' },
+	{
+		"iamcco/markdown-preview.nvim",
+		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+		build = "cd app && npm install",
+		init = function()
+			vim.g.mkdp_filetypes = { "markdown" }
+		end,
+		ft = { "markdown" },
+	},
 	--'rust-lang/rust.vim',
 	-- "Plug 'neovim/nvim-lspconfig'
 	--'tpope/vim-vinegar',
