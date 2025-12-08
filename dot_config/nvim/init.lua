@@ -260,9 +260,14 @@ local null_ls = require 'null-ls'
 
 null_ls.setup({
 	sources = {
+		null_ls.builtins.formatting.biome.with({
+			filetypes = {
+				"javascript", "typescript", "javascriptreact", "typescriptreact", "css", "scss", "html"
+			},
+		}),
 		null_ls.builtins.formatting.prettier.with({
 			filetypes = {
-				"javascript", "typescript", "javascriptreact", "typescriptreact", "css", "scss", "html", "json", "yaml",
+				"json", "yaml",
 				"markdown", "graphql", "md", "txt",
 				"java"
 			},
