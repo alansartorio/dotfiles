@@ -67,7 +67,7 @@ require("lazy").setup({
 	'hrsh7th/cmp-nvim-lsp',
 	{
 		'mrcjkb/rustaceanvim',
-		version = '^6',
+		version = '^9',
 		config = function()
 			vim.g.rustaceanvim = {
 				server = {
@@ -159,7 +159,14 @@ require("lazy").setup({
 	'vinnymeller/swagger-preview.nvim',
 	--'elkowar/yuck.vim',
 	'wannesm/wmgraphviz.vim',
-	{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+	{
+		"arborist-ts/arborist.nvim",
+		config = function()
+			require("arborist").setup({
+				install_popular = false,
+			})
+		end
+	},
 	{
 		"ThePrimeagen/harpoon",
 		branch = "harpoon2",
@@ -214,9 +221,6 @@ require("lazy").setup({
 	},
 	{
 		'jmbuhr/otter.nvim',
-		dependencies = {
-			'nvim-treesitter/nvim-treesitter',
-		},
 		opts = {},
 	},
 	{
@@ -267,12 +271,14 @@ null_ls.setup({
 		}),
 		null_ls.builtins.formatting.prettier.with({
 			filetypes = {
+				"javascript", "typescript", "javascriptreact", "typescriptreact", "css", "scss", "html",
 				"json", "yaml",
 				"markdown", "graphql", "md", "txt",
-				"java"
+				"java", "toml",
 			},
 		}),
 		require('none-ls.formatting.ruff_format'),
+		--null_ls.builtins.formatting.black,
 		null_ls.builtins.formatting.pg_format,
 		null_ls.builtins.formatting.nixfmt,
 		--null_ls.builtins.diagnostics.sqlfluff.with({
@@ -281,22 +287,6 @@ null_ls.setup({
 	},
 	debug = false,
 })
-
-require 'nvim-treesitter.configs'.setup {
-	highlight = {
-		enable = true,
-	}
-}
-
-local parser_config = require 'nvim-treesitter.parsers'.get_parser_configs()
-parser_config.gotmpl = {
-	install_info = {
-		url = "https://github.com/ngalaiko/tree-sitter-go-template",
-		files = { "src/parser.c" }
-	},
-	filetype = "gotmpl",
-	used_by = { "gohtmltmpl", "gotexttmpl", "gotmpl", "yaml" }
-}
 
 local ls = require 'luasnip'
 -- Set up LuaSnip
@@ -331,6 +321,8 @@ cmp.setup({
 	mapping = cmp.mapping.preset.insert({
 		['<C-b>'] = cmp.mapping.scroll_docs(-4),
 		['<C-f>'] = cmp.mapping.scroll_docs(4),
+		['<C-j>'] = cmp.mapping.select_next_item(),
+		['<C-k>'] = cmp.mapping.select_prev_item(),
 		['<C-Space>'] = cmp.mapping.complete(),
 		["<C-x>"] = require('minuet').make_cmp_map(),
 		['<C-e>'] = cmp.mapping.abort(),
