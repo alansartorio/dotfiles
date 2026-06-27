@@ -3,7 +3,7 @@ input {
         xkb {
             layout "us,latam"
             //variant "colemak_dh_ortho"
-            //options "compose:ralt,ctrl:nocaps"
+            options "compose:ralt"
         }
         repeat-delay 225
         repeat-rate 25
@@ -14,6 +14,8 @@ input {
         natural-scroll
     }
     focus-follows-mouse max-scroll-amount="20%"
+    mod-key "Super"
+    mod-key-nested "Alt"
 }
 
 spawn-at-startup "mako"
@@ -97,6 +99,8 @@ binds {
     Mod+Shift+L { consume-or-expel-window-right; }
     Mod+Shift+H { consume-or-expel-window-left; }
 
+    Mod+Ctrl+K { focus-workspace-up; }
+    Mod+Ctrl+J { focus-workspace-down; }
     Mod+Ctrl+L { focus-monitor-right; }
     Mod+Ctrl+H { focus-monitor-left; }
     
@@ -116,6 +120,7 @@ binds {
     Mod+W { close-window; }
     Mod+F {fullscreen-window;}
     Mod+S {toggle-window-floating;}
+    Mod+Shift+F {maximize-column;}
 
     // spawns
     Mod+Return repeat=false { spawn "alacritty"; }
