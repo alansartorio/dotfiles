@@ -599,7 +599,6 @@ dap.configurations.c = {
 }
 vim.fn.sign_define('DapBreakpoint', { text = '🟥', texthl = '', linehl = '', numhl = '' })
 vim.fn.sign_define('DapStopped', { text = '⭐️', texthl = '', linehl = '', numhl = '' })
-require('dap.ext.vscode').load_launchjs()
 
 
 function define_dap_remap(mode, key, func_name)
